@@ -1,32 +1,10 @@
-# Prerequisites
-*.d
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+src/src_AVR_MEGA2560_atmega2560.hex
 
-# Precompiled Headers
-*.gch
-*.pch
+.DS_Store
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+.DS_Store

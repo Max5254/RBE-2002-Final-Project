@@ -1,0 +1,32 @@
+{
+    "version": "1.0.3", 
+    "repository": {
+        "url": "https://github.com/adafruit/Adafruit_MMA8451_Library", 
+        "type": "git"
+    }, 
+    "platforms": [
+        "atmelavr"
+    ], 
+    "description": "Arduino library for the MMA8451 Triple-Axis Accelerometer - 2/4/8g @ 14-bit", 
+    "frameworks": [
+        "arduino"
+    ], 
+    "dependencies": {
+        "frameworks": "arduino", 
+        "name": "Adafruit Unified Sensor"
+    }, 
+    "authors": [
+        {
+            "maintainer": false, 
+            "name": "Adafruit Industries", 
+            "url": "https://github.com/adafruit", 
+            "email": null
+        }
+    ], 
+    "keywords": [
+        "sensor", 
+        "accelerometer"
+    ], 
+    "id": 1099, 
+    "name": "Adafruit MMA8451 Library"
+}
