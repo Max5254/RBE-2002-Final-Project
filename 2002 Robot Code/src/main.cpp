@@ -1,5 +1,8 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
+#include <TimerOne.h>
+#include <UltrasonicSensor.h>
+#include <UltrasonicSensorArray.h>
 #include <Servo.h>
 #include "drive.h"
 #include "helpers.h"
@@ -38,6 +41,13 @@ int lastRadiation, currentRadiation = 0;
 // IO //
 ////////
 
+// first, create an Ultrasonic Sensor Array (USA) to receive inputs on pin 2
+UltrasonicSensorArray usa(2);
+// And then create each ultrasonic sensor (with their output pins)
+UltrasonicSensor leftUltrasonic(13);
+UltrasonicSensor rightUltrasonic(12);
+UltrasonicSensor frontUltrasonic(11);
+
 //Motors
 const int armPort = 8;
 const int gripperPort = 9;
@@ -62,6 +72,13 @@ void setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 
+  // Add each sensor to the UltrasonicSensorArray
+usa.addSensor(&leftUltrasonic);
+usa.addSensor(&rightUltrasonic);
+usa.addSensor(&frontUltrasonic);
+// Initalize the USA timer and input interrupts
+usa.begin();
+
 
   setLEDs(GREEN);
 }
@@ -81,6 +98,10 @@ void printOdomToLCD(){
 // MAIN LOOP //
 ///////////////
 void loop() {
+
+  Serial.println(leftUltrasonic.distance());
+Serial.println(rightUltrasonic.distance());
+Serial.println(frontUltrasonic.distance());
 
   delay(20);
 }
