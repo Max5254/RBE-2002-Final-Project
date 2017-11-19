@@ -16,13 +16,13 @@ public:
   double getX();
   double getY();
   double getTheta();
-  
+
 private:
   //Encoders
-  const int leftEncoderA = 18;
-  const int leftEncoderB = 19;
-  const int rightEncoderA = 2;
-  const int rightencoderB = 3;
+  const int rightEncoderA = 18;
+  const int rightEncoderB = 19;
+  const int leftEncoderA = 2;
+  const int leftEncoderB = 3;
   Encoder leftEncoder;
   Encoder rightEncoder;
 

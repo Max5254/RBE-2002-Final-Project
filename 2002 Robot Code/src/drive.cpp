@@ -7,7 +7,7 @@ turnPID(&turnInput,&turnOutputDesired,&turnSetpoint,Kp_turn,Ki_turn,Kd_turn,DIRE
 odom(0,0,0)
 { }
 
-void Drive::initialize(){
+void Drive::initialize(int leftDrivePort, int rightDrivePort){
   //Init PIDs with output limits, mode, and integration ranges
   drivePID.SetOutputLimits(-0.75,0.75);
   drivePID.SetMode(AUTOMATIC);

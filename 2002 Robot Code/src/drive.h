@@ -13,7 +13,7 @@ class Drive {
 public:
 
   Drive();
-  void initialize();
+  void initialize(int,int);
   void arcadeDrive(double,double);
   bool turnToAngle(double,bool);
   bool driveDistance(double,double,bool);
@@ -33,8 +33,6 @@ private:
   bool booleanDelay(bool, unsigned int);
   unsigned int lastLatched;
 
-  const int leftDrivePort = 11;
-  const int rightDrivePort = 10;
 
   //drive forward constants
   double driveSlewRate = 0.01;

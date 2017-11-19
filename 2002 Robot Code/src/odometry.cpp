@@ -4,7 +4,7 @@
 
 Odom::Odom(double startX, double startY, double startTheta) :
 leftEncoder(leftEncoderA,leftEncoderB),
-rightEncoder(rightEncoderA,rightencoderB)
+rightEncoder(rightEncoderA,rightEncoderB)
 {
   x = startX;
   y = startY;

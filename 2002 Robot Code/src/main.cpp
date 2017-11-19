@@ -42,19 +42,21 @@ int lastRadiation, currentRadiation = 0;
 ////////
 
 // first, create an Ultrasonic Sensor Array (USA) to receive inputs on pin 2
-UltrasonicSensorArray usa(2);
+UltrasonicSensorArray usa(20);
 // And then create each ultrasonic sensor (with their output pins)
-UltrasonicSensor leftUltrasonic(13);
-UltrasonicSensor rightUltrasonic(12);
-UltrasonicSensor frontUltrasonic(11);
+UltrasonicSensor leftUltrasonic(24);
+UltrasonicSensor rightUltrasonic(23);
+UltrasonicSensor frontUltrasonic(22);
 
 //Motors
-const int armPort = 8;
-const int gripperPort = 9;
+const int leftDrivePort = 11;
+const int rightDrivePort = 10;
+const int armPivotPort = 9;
+const int fanPort = 12;
 //Digital IO
-const int startPort = 22;
+const int startPort = 13;
 //Analog Input
-const int armPotPort = A2;
+const int lineSensorPort = A0;
 
 bool enabled = false;
 bool lastPressed = true;
@@ -78,6 +80,8 @@ usa.addSensor(&rightUltrasonic);
 usa.addSensor(&frontUltrasonic);
 // Initalize the USA timer and input interrupts
 usa.begin();
+
+drive.initialize(leftDrivePort,rightDrivePort);
 
 
   setLEDs(GREEN);
