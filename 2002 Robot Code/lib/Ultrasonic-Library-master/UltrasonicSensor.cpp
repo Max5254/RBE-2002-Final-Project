@@ -10,7 +10,7 @@ UltrasonicSensor::UltrasonicSensor(int pingPin) {
   pinMode(pingPin, OUTPUT);
   _pingPin = pingPin;
 }
-void UltrasonicSensor::giveValue(unsigned long timeDifference){   
+void UltrasonicSensor::giveValue(unsigned long timeDifference){
    recentTimeDifference=timeDifference;
 }
 void UltrasonicSensor::pulsePin(){
@@ -23,8 +23,9 @@ void UltrasonicSensor::pulsePin(){
 
 float UltrasonicSensor::distance() {
   noInterrupts();
-  dist = ((562.6 * ((recentTimeDifference-700) / 1000000.0)) * 12.0);
-  //dist = recentTimeDifference; //error testing 
+  //dist = ((562.6 * ((recentTimeDifference-700) / 1000000.0)) * 12.0); // given values
+  dist = (recentTimeDifference - 3600.0)  / (1700.0 / 12.0); // initial tuned values
+  //dist = recentTimeDifference; //error testing
 
   interrupts();
 

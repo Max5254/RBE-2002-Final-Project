@@ -6,6 +6,7 @@
 #include <Servo.h>
 #include "drive.h"
 #include "helpers.h"
+#include "BNO055.h"
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -13,6 +14,7 @@
 #endif
 
 LiquidCrystal lcd(40,41,42,43,44,45);
+
 
 #define LED_PIN 24
 #define NUM_PIXELS 4
@@ -41,7 +43,7 @@ int lastRadiation, currentRadiation = 0;
 // IO //
 ////////
 
-// first, create an Ultrasonic Sensor Array (USA) to receive inputs on pin 2
+// first, create an Ultrasonic Sensor Array (USA) to receive inputs on pin 20
 UltrasonicSensorArray usa(20);
 // And then create each ultrasonic sensor (with their output pins)
 UltrasonicSensor leftUltrasonic(24);
@@ -62,6 +64,8 @@ bool enabled = false;
 bool lastPressed = true;
 
 Drive drive;
+BNO055 IMU;
+
 
 ///////////
 // SETUP //
@@ -80,6 +84,8 @@ usa.addSensor(&rightUltrasonic);
 usa.addSensor(&frontUltrasonic);
 // Initalize the USA timer and input interrupts
 usa.begin();
+
+IMU.initialize();
 
 drive.initialize(leftDrivePort,rightDrivePort);
 
