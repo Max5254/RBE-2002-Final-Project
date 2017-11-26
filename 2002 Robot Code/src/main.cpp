@@ -3,8 +3,8 @@
 #include <TimerOne.h>
 #include <UltrasonicSensor.h>
 #include <UltrasonicSensorArray.h>
-#include <Servo.h>
-#include "drive.h"
+// #include <Servo.h>
+// #include "drive.h"
 #include "helpers.h"
 #include "BNO055.h"
 
@@ -16,9 +16,9 @@
 LiquidCrystal lcd(40,41,42,43,44,45);
 
 
-#define LED_PIN 24
+#define LED_PIN 13
 #define NUM_PIXELS 4
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(4, 24, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 //color constants
 uint32_t RED = strip.Color(255, 0, 0);
@@ -63,7 +63,7 @@ const int lineSensorPort = A0;
 bool enabled = false;
 bool lastPressed = true;
 
-Drive drive;
+// Drive drive;
 BNO055 IMU;
 
 
@@ -84,10 +84,12 @@ usa.addSensor(&rightUltrasonic);
 usa.addSensor(&frontUltrasonic);
 // Initalize the USA timer and input interrupts
 usa.begin();
+Serial.println("1");
 
-IMU.initialize();
+// IMU.initialize();
+Serial.println("2");
 
-drive.initialize(leftDrivePort,rightDrivePort);
+// drive.initialize(11,10);
 
 
   setLEDs(GREEN);
@@ -95,23 +97,41 @@ drive.initialize(leftDrivePort,rightDrivePort);
 
 
 
-void printOdomToLCD(){
-  lcd.setCursor(0, 1);
-  lcd.print(drive.getX());
-  lcd.setCursor(6, 1);
-  lcd.print(drive.getY());
-  lcd.setCursor(12, 1);
-  lcd.print(drive.getTheta());
+// void printOdomToLCD(){
+//   lcd.setCursor(0, 1);
+//   lcd.print(drive.getX());
+//   lcd.setCursor(6, 1);
+//   lcd.print(drive.getY());
+//   lcd.setCursor(12, 1);
+//   lcd.print(drive.getTheta());
+// }
+float scale(float x, float in_min, float in_max, float out_min, float out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+
+int lDist,rDist,fDist;
 
 ///////////////
 // MAIN LOOP //
 ///////////////
 void loop() {
 
-  Serial.println(leftUltrasonic.distance());
-Serial.println(rightUltrasonic.distance());
-Serial.println(frontUltrasonic.distance());
+  lDist = scale(analogRead(A0),0,24,0,1023);
+  rDist = scale(analogRead(A1),0,24,0,1023);
+  fDist = scale(analogRead(A2),0,24,0,1023);
 
-  delay(20);
+
+Serial.println(analogRead(A0));
+// Serial.println(IMU.getX());
+lcd.setCursor(0, 0 );
+lcd.print("hello");
+// Serial.println("hello");
+
+// drive.arcadeDrive(0,0);
+// Serial.println(rightUltrasonic.distance());
+// Serial.println(frontUltrasonic.distance());
+
+  delay(50);
 }
