@@ -169,8 +169,9 @@ void loop() {
 // lcd.print("hello");
 // Serial.println("hello");
 drive.arcadeDrive(0,0);
+flame.get();
 
-Serial.println(walls.getFront());
+// Serial.println(flame.getX1());
 printThings();
 fan.setFan(getFanButton());
 

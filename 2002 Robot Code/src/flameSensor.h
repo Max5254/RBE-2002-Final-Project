@@ -12,12 +12,13 @@ public:
 
   int getX1();
   int getY1();
+  void get();
+
 
 
 private:
 
-  void get();
-  void Write_2bytes(byte,byte);
+void Write_2bytes(byte,byte);
 
 int IRsensorAddress = 0xB0;
 //int IRsensorAddress = 0x58;

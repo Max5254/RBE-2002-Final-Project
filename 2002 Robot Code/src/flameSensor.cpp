@@ -82,14 +82,15 @@ void flameSensor::get(){
    //     Serial.print(",");
    // }
    // Serial.println("");
-   //
-   // return "hello";
+
 }
 
 int flameSensor::getX1(){
+  get();
   return int(Ix[0]);
 }
 
 int flameSensor::getY1(){
+  get();
   return int(Iy[0]);
 }
