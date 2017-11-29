@@ -81,7 +81,6 @@ void BNO055::initialize(){
    bno.setExtCrystalUse(true);
    bno.setMode(0X08);
 
-   bno.setMode(0X08);
    delay(500);
 }
 
