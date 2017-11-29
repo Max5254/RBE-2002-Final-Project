@@ -34,8 +34,8 @@ const int ultrasonicEchoPort = 13;
 const int ultrasonicTriggerPort = 12;
 
 //Analog Input
-const int lineSensorPort = A0;
-const int sharpPort = A1;
+const int lineSensorPort = A2;
+const int sharpPort = A3;
 
 
 bool enabled = false;
@@ -71,6 +71,8 @@ void setLEDs(uint32_t color){ //set all 4 LEDs to specific color
 void setup() {
   Serial.begin(9600);
   lcd.begin(16,2);
+  lcd.setCursor(0, 0 );
+  lcd.print("hi");
 
   pinMode(startPort, INPUT_PULLUP);
   pinMode(fanButtonPort, INPUT_PULLUP);
@@ -84,10 +86,10 @@ drive.initialize(leftDrivePort,rightDrivePort);
 walls.initialize(ultrasonicTriggerPort, ultrasonicEchoPort, sharpPort);
 flame.initialize();
 fan.initialize(fanPort);
-// Serial.println("1");
+Serial.println("1");
 setLEDs(ORANGE);
 IMU.initialize();
-// Serial.println("2");
+Serial.println("2");
 
   setLEDs(GREEN);
 }
@@ -116,7 +118,7 @@ bool getFanButton(){
 }
 
 int state = 1;
-int numStates = 4;
+int numStates = 5;
 bool lastPressed = false;
 
 void printThings(){
@@ -155,7 +157,13 @@ void printThings(){
       lcd.setCursor(7, 1);
       lcd.print(flame.getY1());
       break;
-  }
+      case 5: // Line
+        setLEDs(PURPLE);
+        lcd.print("Line Sensor");
+        lcd.setCursor(0, 1);
+        lcd.print(analogRead(lineSensorPort));
+        break;
+        }
 }
 
 ///////////////
@@ -174,6 +182,7 @@ flame.get();
 // Serial.println(flame.getX1());
 printThings();
 fan.setFan(getFanButton());
+// Serial.println(analogRead(A1));
 
   delay(50);
 }
