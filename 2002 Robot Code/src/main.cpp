@@ -6,6 +6,7 @@
 #include "BNO055.h"
 #include "wallSensors.h"
 #include "flameSensor.h"
+#include "fan.h"
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
@@ -24,8 +25,8 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_K
 //Motors
 const int leftDrivePort = 11;
 const int rightDrivePort = 10;
-const int armPivotPort = 9;
-const int fanPort = 8;
+const int armPivotPort = 8;
+const int fanPort = 9;
 //Digital IO
 const int startPort = 22;
 const int fanButtonPort = 24;
@@ -44,6 +45,7 @@ BNO055 IMU;
 wallSensors walls;
 Drive drive;
 flameSensor flame;
+Fan fan;
 
 //color constants
 uint32_t RED = strip.Color(255, 0, 0);
@@ -81,11 +83,11 @@ setLEDs(RED);
 drive.initialize(leftDrivePort,rightDrivePort);
 walls.initialize(ultrasonicTriggerPort, ultrasonicEchoPort, sharpPort);
 flame.initialize();
+fan.initialize(fanPort);
 // Serial.println("1");
 setLEDs(ORANGE);
 IMU.initialize();
 // Serial.println("2");
-
 
   setLEDs(GREEN);
 }
@@ -170,6 +172,7 @@ drive.arcadeDrive(0,0);
 
 Serial.println(walls.getFront());
 printThings();
+fan.setFan(getFanButton());
 
   delay(50);
 }
