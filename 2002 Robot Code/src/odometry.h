@@ -13,6 +13,8 @@ public:
 
   void reset(double,double,double);
   long getAverageEncoder();
+  long getLeftEncoder();
+  long getRightEncoder();
   double getX();
   double getY();
   double getTheta();

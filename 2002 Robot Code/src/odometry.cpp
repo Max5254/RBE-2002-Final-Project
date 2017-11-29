@@ -66,6 +66,14 @@ long Odom::getAverageEncoder(){
   return ((leftEncoder.read() + rightEncoder.read()) / 2) * driveScale;
 }
 
+long Odom::getLeftEncoder(){
+  return leftEncoder.read() * driveScale;
+}
+
+long Odom::getRightEncoder(){
+  return rightEncoder.read() * driveScale;
+}
+
 double Odom::getX(){return x;}
 double Odom::getY(){return y;}
 double Odom::getTheta(){return theta;}
