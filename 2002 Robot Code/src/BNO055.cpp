@@ -73,6 +73,9 @@ void BNO055::initialize(){
     {
         /* There was a problem detecting the BNO055 ... check your connections */
         Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("rip BNO055");
         while (1);
     }
 
@@ -116,10 +119,14 @@ void BNO055::loadCalibration(){
       bno.setSensorOffsets(calibrationData);
 
       Serial.println("\n\nCalibration data loaded into BNO055");
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("loaded into BNO055");
       foundCalib = true;
   }
 
   delay(1000);
+  offset = getX();
 
   /* Display some basic information on this sensor */
  displaySensorDetails();
@@ -174,6 +181,9 @@ void BNO055::calibrate(){
   }
 
   Serial.println("\nFully calibrated!");
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Fully calibrated!");
   Serial.println("--------------------------------");
   Serial.println("Calibration Results: ");
   adafruit_bno055_offsets_t newCalib;
@@ -192,6 +202,14 @@ void BNO055::calibrate(){
   Serial.println("Data stored to EEPROM.");
 
   Serial.println("\n--------------------------------\n");
+}
+
+float BNO055::wrap(float val){
+  val = int(val) % 360;
+  if(val < 360){
+    val += 360;
+  }
+  return val;
 }
 
 float BNO055::getX(){

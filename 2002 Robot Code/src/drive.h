@@ -5,9 +5,11 @@
 #include "PID_v1.h"
 #include <Servo.h>
 #include "Odometry.h"
+#include "BNO055.h"
 #include <LiquidCrystal.h>
 
 extern LiquidCrystal lcd; //reference lcd object declaired in main
+extern BNO055 IMU;
 
 class Drive {
 public:
@@ -22,6 +24,7 @@ public:
   double getX();
   double getY();
   double getTheta();
+  void navigation();
 
 private:
   Odom odom;
@@ -55,7 +58,7 @@ private:
   double turnNegativeSlewRate = 0.5;
   double turnTolerance = 1.5;
   double turnInput, turnOutputDesired, turnOutput, turnSetpoint;
-  double Kp_turn = 0.014, Ki_turn = 0.02, Kd_turn = 0.003; //old p=0.015, old d=0.001-->0.002
+  double Kp_turn = 0.03, Ki_turn = 0.002, Kd_turn = 0.002; //old p=0.015, old d=0.001-->0.002
   PID turnPID;
 };
 

@@ -14,7 +14,7 @@ void Drive::initialize(int leftDrivePort, int rightDrivePort){
   drivePID.setIRange(0.5);
   straightPID.SetOutputLimits(-0.5,0.5);
   straightPID.SetMode(AUTOMATIC);
-  turnPID.SetOutputLimits(-0.5,0.5);
+  turnPID.SetOutputLimits(-1, 1);
   turnPID.SetMode(AUTOMATIC);
   turnPID.setIRange(10);
 
@@ -96,32 +96,37 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
 *  @return true when in range half a second
 */
 bool Drive::turnToAngle(double angle, bool enabled){
-  turnInput = getTheta();
+  turnInput = IMU.getX();
   turnSetpoint = angle;
   turnPID.Compute();
 
-  if (turnPID.getError() > 0) { //invert slew rates if moving backwards
-    upSlew = turnSlewRate;
-    downSlew = turnNegativeSlewRate;
-  } else {
-    downSlew = turnSlewRate;
-    upSlew = turnNegativeSlewRate;
-  }
+  // if (turnPID.getError() > 0) { //invert slew rates if moving backwards
+  //   upSlew = turnSlewRate;
+  //   downSlew = turnNegativeSlewRate;
+  // } else {
+  //   downSlew = turnSlewRate;
+  //   upSlew = turnNegativeSlewRate;
+  // }
+  //
+  // if(enabled){
+  //   if (turnOutputDesired > turnOutput){ //ramp up and down speed of motors
+  //     turnOutput += turnOutputDesired - turnOutput > upSlew ? upSlew : turnOutputDesired - turnOutput;
+  //   } else {
+  //     turnOutput -= turnOutput - turnOutputDesired > downSlew ? downSlew : turnOutput - turnOutputDesired;
+  //   }
+  // } else {
+  //   turnOutput = 0;
+  // }
 
-  if(enabled){
-    if (turnOutputDesired > turnOutput){ //ramp up and down speed of motors
-      turnOutput += turnOutputDesired - turnOutput > upSlew ? upSlew : turnOutputDesired - turnOutput;
-    } else {
-      turnOutput -= turnOutput - turnOutputDesired > downSlew ? downSlew : turnOutput - turnOutputDesired;
-    }
-  } else {
-    turnOutput = 0;
-  }
-
-  arcadeDrive(0, turnOutput);
+  arcadeDrive(0, turnOutputDesired);
 
   //return true if in target range for 0.5 secons
   return booleanDelay(abs(turnPID.getError()) < turnTolerance, 500);
+}
+
+void Drive::navigation(){
+
+  
 }
 
 /* control drive motors
@@ -129,8 +134,8 @@ bool Drive::turnToAngle(double angle, bool enabled){
 *  @param turn      the turning speed (+ is right)
 */
 void Drive::arcadeDrive(double throttle, double turn){
-  leftDrive.write(frcToServo(throttle + turn));
-  rightDrive.write(frcToServo(turn - throttle));
+  leftDrive.write(frcToServo(throttle - turn));
+  rightDrive.write(frcToServo(-turn - throttle));
 }
 
 //Converts from -1 to 1 scale to a 0 180 sclase

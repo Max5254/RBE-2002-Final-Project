@@ -18,7 +18,7 @@ LiquidCrystal lcd(40,41,42,43,44,45);
 ////////
 // IO //
 ////////
-#define LED_PIN 23
+#define LED_PIN 25
 #define NUM_PIXELS 4
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -117,7 +117,7 @@ bool getFanButton(){
   return !digitalRead(fanButtonPort);
 }
 
-int state = 1;
+int state = 3;
 int numStates = 5;
 bool lastPressed = false;
 
@@ -181,7 +181,13 @@ flame.get();
 
 // Serial.println(flame.getX1());
 printThings();
-fan.setFan(getFanButton());
+fan.setFan(getFanButton() && false);
+if(getFanButton()){
+  while(!drive.turnToAngle(90, getFanButton()));
+  // drive.arcadeDrive(0, 1);
+} else {
+  drive.arcadeDrive(0, 0);
+}
 // Serial.println(analogRead(A1));
 
   delay(50);
