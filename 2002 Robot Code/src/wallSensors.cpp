@@ -28,7 +28,8 @@ double wallSensors::getFront(int freq){
 }
 
 double wallSensors::getSharp(int port){
-  return 16757 * pow(analogRead(port), -1.53);
+  int value = analogRead(port);
+  return (value > 450 || value < 180) ? 999.0 : 16757 * pow(analogRead(port), -1.53);
 }
 
 double wallSensors::getHC_SR04(int trigPin, int echoPin){

@@ -28,7 +28,7 @@ public:
   double getX();
   double getY();
   double getTheta();
-  void navigation(bool);
+  void navigation(bool,double);
   float getLeftEncoder();
   float getRightEncoder();
 
@@ -40,6 +40,9 @@ private:
   enum navigationStates {
   FOLLOWING_WALL,
   TURNING_LEFT,
+  PID_FORWARD,
+  PID_FORWARD_LONG,
+  TURNING_RIGHT,
   STOPPING
 };
 
@@ -60,9 +63,9 @@ navigationStates navStates = FOLLOWING_WALL;
   double upSlew,downSlew;
   long driveStartingPoint;
   bool driveStarting = true;
-  double driveTolerance = 0.75;
+  double driveTolerance = 1.5;
   double driveInput, driveOutputDesired, driveOutput, driveSetpoint;
-  double Kp_drive = 0.12, Ki_drive = 0.006, Kd_drive = 0.01; // i .004
+  double Kp_drive = 0.3, Ki_drive = 0.006, Kd_drive = 0.01; // i .004  .12
   PID drivePID;
 
   //drive straight constants
@@ -75,8 +78,11 @@ navigationStates navStates = FOLLOWING_WALL;
   double turnNegativeSlewRate = 0.5;
   double turnTolerance = 1.5;
   double turnInput, turnOutputDesired, turnOutput, turnSetpoint;
-  double Kp_turn = 0.04, Ki_turn = 0.008, Kd_turn = 0.002; //old p=0.015, old d=0.001-->0.002
+  double Kp_turn = 0.04, Ki_turn = 0.05, Kd_turn = 0.004; //old .045,.017,.004
   PID turnPID;
+
+  double wallError;
+  double Kp_wall = 4;
 };
 
 #endif
