@@ -88,7 +88,7 @@ fan.initialize(fanPort);
 Serial.println("1");
 setLEDs(ORANGE);
 IMU.initialize();
-IMU.reset(270);
+IMU.reset(0);
 Serial.println("2");
 drive.initialize(leftDrivePort,rightDrivePort); // must be after IMU
 
@@ -163,7 +163,7 @@ void printThings(){
         setLEDs(PURPLE);
         lcd.print("Line Sensor");
         lcd.setCursor(0, 1);
-        lcd.print(analogRead(lineSensorPort));
+        lcd.print(analogRead(sharpPort));
         break;
       case 6: // odom
         lcd.print("Odometry (x y z)");

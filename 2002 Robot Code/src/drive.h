@@ -48,6 +48,7 @@ int navAngle;
 navigationStates navStates = FOLLOWING_WALL;
 
 
+  double fixAngle(double);
   int frcToServo(double);
   bool booleanDelay(bool, unsigned int);
   unsigned int lastLatched;
@@ -74,7 +75,7 @@ navigationStates navStates = FOLLOWING_WALL;
   double turnNegativeSlewRate = 0.5;
   double turnTolerance = 1.5;
   double turnInput, turnOutputDesired, turnOutput, turnSetpoint;
-  double Kp_turn = 0.038, Ki_turn = 0.005, Kd_turn = 0.002; //old p=0.015, old d=0.001-->0.002
+  double Kp_turn = 0.04, Ki_turn = 0.008, Kd_turn = 0.002; //old p=0.015, old d=0.001-->0.002
   PID turnPID;
 };
 

@@ -91,7 +91,7 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
 }
 
 void Drive::driveStraight(double speed, double angle, bool enabled){
-  straightInput = IMU.getX();
+  straightInput = fixAngle(IMU.getX());
   straightSetpoint = angle;
   straightPID.Compute();
 
@@ -104,7 +104,7 @@ void Drive::driveStraight(double speed, double angle, bool enabled){
 *  @return true when in range half a second
 */
 bool Drive::turnToAngle(double angle, bool enabled){
-  turnInput = IMU.getX();
+  turnInput = fixAngle(IMU.getX());
   turnSetpoint = angle;
   turnPID.Compute();
 
@@ -159,6 +159,18 @@ void Drive::navigation(bool enabled){
   } else {
     arcadeDrive(0, 0);
   }
+}
+
+double Drive::fixAngle(double angle){
+  //Fix angle
+while(angle>180){
+    angle-=360;
+  }
+while(angle<=-180){
+    angle+=360;
+  }
+
+    return angle;
 }
 
 /* control drive motors
