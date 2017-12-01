@@ -3,6 +3,9 @@
 
 #include "Arduino.h"
 #include "Encoder.h"
+#include "BNO055.h"
+
+extern BNO055 IMU;
 
 class Odom {
 public:
@@ -13,8 +16,8 @@ public:
 
   void reset(double,double,double);
   long getAverageEncoder();
-  long getLeftEncoder();
-  long getRightEncoder();
+  float getLeftEncoder();
+  float getRightEncoder();
   double getX();
   double getY();
   double getTheta();
@@ -23,8 +26,8 @@ private:
   //Encoders
   const int rightEncoderA = 18;
   const int rightEncoderB = 19;
-  const int leftEncoderA = 2;
-  const int leftEncoderB = 3;
+  const int leftEncoderA = 3;
+  const int leftEncoderB = 2;
   Encoder leftEncoder;
   Encoder rightEncoder;
 

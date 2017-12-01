@@ -8,6 +8,7 @@
 #include <utility/imumaths.h>
 #include <EEPROM.h>
 #include <LiquidCrystal.h>
+#include "helpers.h"
 
 /* Set the delay between fresh samples */
 #define BNO055_SAMPLERATE_DELAY_MS (100)
@@ -30,12 +31,9 @@ public:
   float getZ();
 
 
-
 private:
   void loadCalibration();
-  float wrap(float);
-  int offset = 0;
-
+  float offset;
 
   Adafruit_BNO055 bno;
 

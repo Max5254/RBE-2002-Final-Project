@@ -23,3 +23,10 @@ double scaleValues(double x, double in_min, double in_max, double out_min, doubl
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+float wrap(float x){
+  x = fmod(x,360);
+  if (x < 0)
+      x += 360;
+  return x;
+}

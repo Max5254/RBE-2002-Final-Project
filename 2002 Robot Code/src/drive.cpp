@@ -24,6 +24,7 @@ void Drive::initialize(int leftDrivePort, int rightDrivePort){
   odom.setScale(0.024, 5.4);  //drive scale , turn scale to map encoder tics to inches and degrees
 
   odom.reset(0,0,0);  //init robot location to x=0 y =0 theta=0
+  navAngle = IMU.getX();
 }
 
 /* drive forward a set distance using PID
@@ -42,7 +43,6 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
     Serial.print("driving distance: ");
     Serial.print(driveStartingPoint);
     Serial.println(angle);
-
   }
 
   //scale input if driving at a -180 degreee angle
@@ -90,6 +90,14 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
   return done;
 }
 
+void Drive::driveStraight(double speed, double angle, bool enabled){
+  straightInput = IMU.getX();
+  straightSetpoint = angle;
+  straightPID.Compute();
+
+  arcadeDrive(speed, straightOutput);
+}
+
 /* turn to specific angle using PID
 *  @param angle    the target angle to turn
 *  @param enabled  if the loop is running
@@ -99,6 +107,9 @@ bool Drive::turnToAngle(double angle, bool enabled){
   turnInput = IMU.getX();
   turnSetpoint = angle;
   turnPID.Compute();
+
+  lcd.setCursor(0, 1);
+  lcd.print(IMU.getX());
 
   // if (turnPID.getError() > 0) { //invert slew rates if moving backwards
   //   upSlew = turnSlewRate;
@@ -124,9 +135,30 @@ bool Drive::turnToAngle(double angle, bool enabled){
   return booleanDelay(abs(turnPID.getError()) < turnTolerance, 500);
 }
 
-void Drive::navigation(){
+void Drive::navigation(bool enabled){
+  if(enabled){
+  switch (navStates) {
+    case FOLLOWING_WALL:
+        driveStraight(1, navAngle, enabled);
+        if(walls.getFront() < 8){
+          navStates = TURNING_LEFT;
+          navAngle = wrap(navAngle - 90);
+        }
+      break;
 
-  
+    case TURNING_LEFT:
+      if(turnToAngle(navAngle, enabled)){
+        navStates = FOLLOWING_WALL;
+      }
+      break;
+
+    case STOPPING:
+      arcadeDrive(0, 0);
+      break;
+  }
+  } else {
+    arcadeDrive(0, 0);
+  }
 }
 
 /* control drive motors
@@ -164,6 +196,10 @@ void Drive::odometry(){
 void Drive::reset(double newX,double newY, double newTheta){
   odom.reset(newX,newY,newTheta);
 }
+
+float Drive::getLeftEncoder(){ return odom.getLeftEncoder();}
+float Drive::getRightEncoder(){ return odom.getRightEncoder();}
+
 
 double Drive::getX(){return odom.getX();}
 double Drive::getY(){return odom.getY();}

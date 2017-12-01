@@ -82,14 +82,16 @@ void setup() {
   strip.show(); // Initialize all pixels to 'off'
 
 setLEDs(RED);
-drive.initialize(leftDrivePort,rightDrivePort);
 walls.initialize(ultrasonicTriggerPort, ultrasonicEchoPort, sharpPort);
 flame.initialize();
 fan.initialize(fanPort);
 Serial.println("1");
 setLEDs(ORANGE);
 IMU.initialize();
+IMU.reset(270);
 Serial.println("2");
+drive.initialize(leftDrivePort,rightDrivePort); // must be after IMU
+
 
   setLEDs(GREEN);
 }
@@ -118,8 +120,8 @@ bool getFanButton(){
 }
 
 int state = 3;
-int numStates = 5;
-bool lastPressed = false;
+int numStates = 6;
+bool lastPressed, lastFan = false;
 
 void printThings(){
   if(getStart() && !lastPressed){ state++; }
@@ -163,6 +165,15 @@ void printThings(){
         lcd.setCursor(0, 1);
         lcd.print(analogRead(lineSensorPort));
         break;
+      case 6: // odom
+        lcd.print("Odometry (x y z)");
+        lcd.setCursor(0, 1);
+        lcd.print(drive.getX());
+        lcd.setCursor(6, 1);
+        lcd.print(drive.getY());
+        lcd.setCursor(12, 1);
+        lcd.print(drive.getTheta());
+        break;
         }
 }
 
@@ -178,16 +189,34 @@ void loop() {
 // Serial.println("hello");
 drive.arcadeDrive(0,0);
 flame.get();
+drive.odometry();
+
+
 
 // Serial.println(flame.getX1());
 printThings();
 fan.setFan(getFanButton() && false);
-if(getFanButton()){
-  while(!drive.turnToAngle(90, getFanButton()));
-  // drive.arcadeDrive(0, 1);
-} else {
-  drive.arcadeDrive(0, 0);
+
+
+
+// if(getFanButton()){
+//   while(!drive.turnToAngle(180, true));
+//   // drive.arcadeDrive(0, 1);
+// } else {
+//   drive.arcadeDrive(0, 0);
+// }
+
+
+
+if(getFanButton() && !lastFan) {
+  enabled = !enabled;
 }
+lastFan = getFanButton();
+
+drive.navigation(enabled);
+Serial.println(drive.getRightEncoder());
+
+
 // Serial.println(analogRead(A1));
 
   delay(50);

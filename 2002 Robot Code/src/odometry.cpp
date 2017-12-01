@@ -34,13 +34,14 @@ void Odom::track(){
   //get average
   avgIn = (leftIn + rightIn) / 2.0;
   //Get theta
-  theta += (leftTicks - rightTicks) / turnScale;
+  // theta += (leftTicks - rightTicks) / turnScale;
+  theta = IMU.getX();
 
-  //Wrap theta
-  if(theta > 180)
-  theta = theta - 360;
-  if(theta < -180)
-  theta = 360 + theta;
+  // //Wrap theta
+  // if(theta > 180)
+  // theta = theta - 360;
+  // if(theta < -180)
+  // theta = 360 + theta;
 
   //add new componets
   y += avgIn * cos((theta * 3.14) / 180);
@@ -66,11 +67,11 @@ long Odom::getAverageEncoder(){
   return ((leftEncoder.read() + rightEncoder.read()) / 2) * driveScale;
 }
 
-long Odom::getLeftEncoder(){
+float Odom::getLeftEncoder(){
   return leftEncoder.read() * driveScale;
 }
 
-long Odom::getRightEncoder(){
+float Odom::getRightEncoder(){
   return rightEncoder.read() * driveScale;
 }
 

@@ -6,10 +6,13 @@
 #include <Servo.h>
 #include "Odometry.h"
 #include "BNO055.h"
+#include "wallSensors.h"
+#include "helpers.h"
 #include <LiquidCrystal.h>
 
 extern LiquidCrystal lcd; //reference lcd object declaired in main
 extern BNO055 IMU;
+extern wallSensors walls;
 
 class Drive {
 public:
@@ -19,17 +22,30 @@ public:
   void arcadeDrive(double,double);
   bool turnToAngle(double,bool);
   bool driveDistance(double,double,bool);
+  void driveStraight(double,double,bool);
   void odometry();
   void reset(double,double,double);
   double getX();
   double getY();
   double getTheta();
-  void navigation();
+  void navigation(bool);
+  float getLeftEncoder();
+  float getRightEncoder();
 
 private:
   Odom odom;
   Servo leftDrive;
   Servo rightDrive;
+
+  enum navigationStates {
+  FOLLOWING_WALL,
+  TURNING_LEFT,
+  STOPPING
+};
+
+int navAngle;
+
+navigationStates navStates = FOLLOWING_WALL;
 
 
   int frcToServo(double);
@@ -58,7 +74,7 @@ private:
   double turnNegativeSlewRate = 0.5;
   double turnTolerance = 1.5;
   double turnInput, turnOutputDesired, turnOutput, turnSetpoint;
-  double Kp_turn = 0.03, Ki_turn = 0.002, Kd_turn = 0.002; //old p=0.015, old d=0.001-->0.002
+  double Kp_turn = 0.038, Ki_turn = 0.005, Kd_turn = 0.002; //old p=0.015, old d=0.001-->0.002
   PID turnPID;
 };
 

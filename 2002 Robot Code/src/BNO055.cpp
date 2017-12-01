@@ -84,7 +84,16 @@ void BNO055::initialize(){
    bno.setExtCrystalUse(true);
    bno.setMode(0X08);
 
-   delay(500);
+   delay(2000);
+
+}
+
+void BNO055::reset(int angle){
+  sensors_event_t event;
+  bno.getEvent(&event);
+  offset = event.orientation.x - angle;
+  Serial.print("offset: ");
+  Serial.println(offset);
 }
 
 
@@ -126,7 +135,6 @@ void BNO055::loadCalibration(){
   }
 
   delay(1000);
-  offset = getX();
 
   /* Display some basic information on this sensor */
  displaySensorDetails();
@@ -204,18 +212,10 @@ void BNO055::calibrate(){
   Serial.println("\n--------------------------------\n");
 }
 
-float BNO055::wrap(float val){
-  val = int(val) % 360;
-  if(val < 360){
-    val += 360;
-  }
-  return val;
-}
-
 float BNO055::getX(){
   sensors_event_t event;
   bno.getEvent(&event);
-  return event.orientation.x;
+  return wrap(event.orientation.x - offset);
 }
 
 float BNO055::getY(){
