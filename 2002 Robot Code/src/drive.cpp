@@ -50,10 +50,13 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
   driveSetpoint = setpoint;
   drivePID.Compute();
 
-  straightInput = fixAngle(IMU.getX());
+  straightInput = IMU.getX();
   straightSetpoint = angle;
   double error = (angle-straightInput);
-  if(straightInput < -135){
+  if(straightInput > 135 && abs(angle) == 180){
+    error += 360;
+  }
+  if(straightInput < -135 && angle == 0){
     error -= 360;
   }
   straightPID.Compute(error);
@@ -94,16 +97,19 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
 }
 
 void Drive::driveStraight(double speed, double angle, bool enabled){
-  straightInput = fixAngle(IMU.getX());
+  straightInput = IMU.getX();
   straightSetpoint = angle;
   double error = (angle-straightInput);
-  if(straightInput < -135){
+  if(straightInput > 135 && abs(angle) == 180){
+    error += 360;
+  }
+  if(straightInput < -135 && angle == 0){
     error -= 360;
   }
 
   straightPID.Compute(error);
 
-  Serial.println(straightPID.getError());
+  // Serial.println(straightPID.getError());
 
 
   arcadeDrive(speed, straightOutput);
@@ -115,10 +121,13 @@ void Drive::driveStraight(double speed, double angle, bool enabled){
 *  @return true when in range half a second
 */
 bool Drive::turnToAngle(double angle, bool enabled){
-  turnInput = fixAngle(IMU.getX());
+  turnInput = IMU.getX();
   turnSetpoint = angle;
   double error = (angle-turnInput);
-  if(turnInput < -135){
+  if(turnInput > 135 && abs(angle) == 180){
+    error += 360;
+  }
+  if(turnInput < -135 && angle == 0){
     error -= 360;
   }
   turnPID.Compute(error);
