@@ -12,7 +12,9 @@ public:
 
   int getX1();
   int getY1();
+  int getActive();
   void get();
+  double getHAngle();
 
 
 

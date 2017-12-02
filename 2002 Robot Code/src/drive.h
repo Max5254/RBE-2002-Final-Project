@@ -25,6 +25,7 @@ public:
   void driveStraight(double,double,bool);
   void odometry();
   void reset(double,double,double);
+  double angleDiff(double angle1, double angle2);
   double getX();
   double getY();
   double getTheta();

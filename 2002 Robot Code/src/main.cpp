@@ -88,7 +88,7 @@ fan.initialize(fanPort);
 Serial.println("1");
 setLEDs(ORANGE);
 IMU.initialize();
-IMU.reset(270);
+IMU.reset(0);
 Serial.println("2");
 drive.initialize(leftDrivePort,rightDrivePort); // must be after IMU
 
@@ -209,12 +209,20 @@ fan.setFan(getFanButton() && false);
 
 
 if(getFanButton() && !lastFan) {
-  enabled = !enabled;
+  //enabled = !enabled;
+  Serial.print(IMU.getX());
+  Serial.print(", ");
+  Serial.print((flame.getX1()-576)*-0.0396);
+  Serial.print(", ");
+  Serial.println(flame.getX1());
+  Serial.println(drive.angleDiff(25.3, 180.1));
+  Serial.println(drive.angleDiff(25.3, 180.1));
+
 }
 lastFan = getFanButton();
 
 drive.navigation(enabled);
-Serial.println(drive.getRightEncoder());
+//Serial.println(drive.getRightEncoder());
 
 
 // Serial.println(analogRead(A1));

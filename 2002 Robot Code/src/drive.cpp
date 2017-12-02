@@ -197,6 +197,10 @@ void Drive::reset(double newX,double newY, double newTheta){
   odom.reset(newX,newY,newTheta);
 }
 
+double Drive::angleDiff(double angle1, double angle2){
+  return fmod(angle1 - angle2 + 540, 360) - 180;
+}
+
 float Drive::getLeftEncoder(){ return odom.getLeftEncoder();}
 float Drive::getRightEncoder(){ return odom.getRightEncoder();}
 

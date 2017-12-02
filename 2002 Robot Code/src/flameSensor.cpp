@@ -85,12 +85,25 @@ void flameSensor::get(){
 
 }
 
+int flameSensor::getActive(){
+  for (int i = 0; i < 4; i++){
+    if(Ix[i] != 1023){
+      return i;
+    }
+  }
+  return 0;
+}
+
 int flameSensor::getX1(){
   get();
-  return int(Ix[0]);
+  return int(Ix[getActive()]);
 }
 
 int flameSensor::getY1(){
   get();
-  return int(Iy[0]);
+  return int(Iy[getActive()]);
+}
+
+double flameSensor::getHAngle(){
+  return (getX1()-576)*-0.0396;
 }
