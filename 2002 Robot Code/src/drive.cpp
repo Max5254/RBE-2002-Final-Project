@@ -50,13 +50,8 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
   driveSetpoint = setpoint;
   drivePID.Compute();
 
-  straightInput = fixAngle(IMU.getX());
-  straightSetpoint = angle;
-  double error = (angle-straightInput);
-  if(straightInput < -135){
-    error -= 360;
-  }
-  straightPID.Compute(error);
+  straightPID.Compute(angleDiff(IMU.getX(), angle));
+
 
   // if (drivePID.getError() > 0) { //invert slew gains if setpoint is backwards
   //   upSlew = driveSlewRate;
@@ -94,14 +89,8 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
 }
 
 void Drive::driveStraight(double speed, double angle, bool enabled){
-  straightInput = fixAngle(IMU.getX());
-  straightSetpoint = angle;
-  double error = (angle-straightInput);
-  if(straightInput < -135){
-    error -= 360;
-  }
+  straightPID.Compute(angleDiff(IMU.getX(), angle));
 
-  straightPID.Compute(error);
 
   Serial.println(straightPID.getError());
 
@@ -115,34 +104,10 @@ void Drive::driveStraight(double speed, double angle, bool enabled){
 *  @return true when in range half a second
 */
 bool Drive::turnToAngle(double angle, bool enabled){
-  turnInput = fixAngle(IMU.getX());
-  turnSetpoint = angle;
-  double error = (angle-turnInput);
-  if(turnInput < -135){
-    error -= 360;
-  }
-  turnPID.Compute(error);
+  turnPID.Compute(angleDiff(IMU.getX(), angle));
 
   lcd.setCursor(0, 1);
   lcd.print(fixAngle(IMU.getX()));
-
-  // if (turnPID.getError() > 0) { //invert slew rates if moving backwards
-  //   upSlew = turnSlewRate;
-  //   downSlew = turnNegativeSlewRate;
-  // } else {
-  //   downSlew = turnSlewRate;
-  //   upSlew = turnNegativeSlewRate;
-  // }
-  //
-  // if(enabled){
-  //   if (turnOutputDesired > turnOutput){ //ramp up and down speed of motors
-  //     turnOutput += turnOutputDesired - turnOutput > upSlew ? upSlew : turnOutputDesired - turnOutput;
-  //   } else {
-  //     turnOutput -= turnOutput - turnOutputDesired > downSlew ? downSlew : turnOutput - turnOutputDesired;
-  //   }
-  // } else {
-  //   turnOutput = 0;
-  // }
 
   arcadeDrive(0, turnOutputDesired);
 
