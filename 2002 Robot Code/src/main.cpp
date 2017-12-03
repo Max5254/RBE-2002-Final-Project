@@ -18,7 +18,7 @@ LiquidCrystal lcd(40,41,42,43,44,45);
 ////////
 // IO //
 ////////
-#define LED_PIN 25
+#define LED_PIN 23
 #define NUM_PIXELS 4
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
@@ -30,12 +30,14 @@ const int fanPort = 9;
 //Digital IO
 const int startPort = 22;
 const int fanButtonPort = 24;
-const int ultrasonicEchoPort = 13;
-const int ultrasonicTriggerPort = 12;
+const int frontEchoPort = 13;
+const int frontTriggerPort = 12;
+const int rightEchoPort = 26;
+const int rightTriggerPort = 25;
 
 //Analog Input
 const int lineSensorPort = A2;
-const int sharpPort = A3;
+// const int sharpPort = A3;
 
 
 bool enabled = false;
@@ -82,7 +84,7 @@ void setup() {
   strip.show(); // Initialize all pixels to 'off'
 
 setLEDs(RED);
-walls.initialize(ultrasonicTriggerPort, ultrasonicEchoPort, sharpPort);
+walls.initialize(frontTriggerPort, frontEchoPort, rightTriggerPort, rightEchoPort);
 flame.initialize();
 fan.initialize(fanPort);
 Serial.println("1");
@@ -162,9 +164,9 @@ void printThings(){
       break;
       case 5: // Line
         setLEDs(PURPLE);
-        lcd.print("Sharp Sensor");
+        lcd.print("Line Sensor");
         lcd.setCursor(0, 1);
-        lcd.print(analogRead(sharpPort));
+        lcd.print(analogRead(lineSensorPort));
         break;
       case 6: // odom
         lcd.print("Odometry (x y z)");
@@ -188,9 +190,8 @@ void loop() {
 // lcd.setCursor(0, 0 );
 // lcd.print("hello");
 // Serial.println("hello");
-drive.arcadeDrive(0,0);
-flame.get();
 drive.odometry();
+walls.periodicPing(400,200);
 
 
 
@@ -220,6 +221,8 @@ if(getFanButton() && !lastFan) {
   Serial.println(drive.angleDiff(25.3, 180.1));
 
 }
+
+// Serial.println(walls.getLoopDelay());
 lastFan = getFanButton();
 
 drive.navigation(enabled, 5);
@@ -230,5 +233,5 @@ drive.navigation(enabled, 5);
 
 // Serial.println(analogRead(A1));
 
-  delay(50);
+  delay(50 - walls.getLoopDelay());
 }

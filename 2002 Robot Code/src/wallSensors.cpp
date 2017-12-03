@@ -2,12 +2,16 @@
 
 wallSensors::wallSensors(){}
 
-void wallSensors::initialize(int _frontTriggerPort, int _frontEchoPort, int _rightPort){
+void wallSensors::initialize(int _frontTriggerPort, int _frontEchoPort, int _rightTriggerPort, int _rightEchoPort){
   frontEchoPort = _frontEchoPort;
-  rightPort = _rightPort;
   frontTriggerPort = _frontTriggerPort;
+  rightEchoPort = _rightEchoPort;
+  rightTriggerPort = _rightTriggerPort;
 
   initHC_SR04(frontTriggerPort,frontEchoPort);
+  initHC_SR04(rightTriggerPort,rightEchoPort);
+  frontTimer, rightTimer, loopStartTime = millis();
+
 }
 
 void wallSensors::initHC_SR04(int trigPin, int echoPin){
@@ -16,15 +20,29 @@ void wallSensors::initHC_SR04(int trigPin, int echoPin){
 }
 
 double wallSensors::getRight(){
-  return getSharp(rightPort);
+  return rightDistance;
 }
 
 double wallSensors::getFront(){
-  return getHC_SR04(frontTriggerPort,frontEchoPort);
+  return frontDistance;
 }
 
-double wallSensors::getFront(int freq){
-  return getHC_SR04(frontTriggerPort,frontEchoPort);
+void wallSensors::periodicPing(int frontFreq, int rightFreq){
+  loopStartTime = millis();
+  if(millis() - frontTimer >= frontFreq){
+    frontTimer = millis();
+    frontDistance = getHC_SR04(frontTriggerPort,frontEchoPort);
+  }
+
+  if(millis() - rightTimer >= rightFreq){
+    rightTimer = millis();
+    rightDistance = getHC_SR04(rightTriggerPort, rightEchoPort);
+  }
+  loopDelay = millis() - loopStartTime;
+}
+
+int wallSensors::getLoopDelay(){
+  return loopDelay;
 }
 
 double wallSensors::getSharp(int port){
@@ -44,5 +62,5 @@ digitalWrite(trigPin, LOW);
 duration = pulseIn(echoPin, HIGH, 5000);
 // Calculating the distance
 distance = duration*0.034/2;
-return (distance > 0 ? distance : 999) / 2.54;  // scale to inches
+return (distance > 0 ? distance : 2600) / 2.54;  // scale to inches
 }
