@@ -88,7 +88,7 @@ fan.initialize(fanPort);
 Serial.println("1");
 setLEDs(ORANGE);
 IMU.initialize();
-IMU.reset(0);
+IMU.reset(90);
 Serial.println("2");
 drive.initialize(leftDrivePort,rightDrivePort); // must be after IMU
 
@@ -195,12 +195,7 @@ drive.odometry();
 
 // Serial.println(flame.getX1());
 printThings();
-if(flame.getX1() < 900){
-fan.setFan(true);
-} else{
-  fan.setFan(false);
-}
-
+fan.setFan(getFanButton() && false);
 
 
 
@@ -219,7 +214,7 @@ if(getFanButton() && !lastFan) {
 lastFan = getFanButton();
 
 drive.navigation(enabled, 5);
-// drive.driveStraight(1, wrap(0), true);
+// drive.driveStraight(1, 180, true);
 // Serial.println(drive.getRightEncoder());
 
 
