@@ -45,35 +45,38 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
     Serial.println(angle);
   }
 
-  //scale input if driving at a -180 degreee angle
-  straightInput = odom.getTheta() < -170 ? 180 - abs(odom.getTheta()) + 180  : odom.getTheta();
 
   driveInput = odom.getAverageEncoder() - driveStartingPoint;
   driveSetpoint = setpoint;
   drivePID.Compute();
 
+  straightInput = fixAngle(IMU.getX());
   straightSetpoint = angle;
-  straightPID.Compute();
-
-  if (drivePID.getError() > 0) { //invert slew gains if setpoint is backwards
-    upSlew = driveSlewRate;
-    downSlew = driveNegativeSlewRate;
-  } else {
-    downSlew = driveSlewRate;
-    upSlew = driveNegativeSlewRate;
+  double error = (angle-straightInput);
+  if(straightInput < -135){
+    error -= 360;
   }
+  straightPID.Compute(error);
 
-  if(enabled){
-    if (driveOutputDesired > driveOutput){ //ramp the motor values up and down to avoid jerky motion and wheel slip
-      driveOutput += driveOutputDesired - driveOutput > upSlew ? upSlew : driveOutputDesired - driveOutput;
-    } else {
-      driveOutput -= driveOutput - driveOutputDesired > downSlew ? downSlew : driveOutput - driveOutputDesired;
-    }
-  } else {
-    driveOutput = 0;
-  }
+  // if (drivePID.getError() > 0) { //invert slew gains if setpoint is backwards
+  //   upSlew = driveSlewRate;
+  //   downSlew = driveNegativeSlewRate;
+  // } else {
+  //   downSlew = driveSlewRate;
+  //   upSlew = driveNegativeSlewRate;
+  // }
+  //
+  // if(enabled){
+  //   if (driveOutputDesired > driveOutput){ //ramp the motor values up and down to avoid jerky motion and wheel slip
+  //     driveOutput += driveOutputDesired - driveOutput > upSlew ? upSlew : driveOutputDesired - driveOutput;
+  //   } else {
+  //     driveOutput -= driveOutput - driveOutputDesired > downSlew ? downSlew : driveOutput - driveOutputDesired;
+  //   }
+  // } else {
+  //   driveOutput = 0;
+  // }
 
-  arcadeDrive(driveOutput , straightOutput);
+  arcadeDrive(driveOutputDesired , straightOutput);
 
   // Serial.print(abs(drivePID.getError()));
   // Serial.print(" ");
@@ -91,9 +94,17 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
 }
 
 void Drive::driveStraight(double speed, double angle, bool enabled){
-  straightInput = IMU.getX();
+  straightInput = fixAngle(IMU.getX());
   straightSetpoint = angle;
-  straightPID.Compute();
+  double error = (angle-straightInput);
+  if(straightInput < -135){
+    error -= 360;
+  }
+
+  straightPID.Compute(error);
+
+  Serial.println(straightPID.getError());
+
 
   arcadeDrive(speed, straightOutput);
 }
@@ -104,12 +115,16 @@ void Drive::driveStraight(double speed, double angle, bool enabled){
 *  @return true when in range half a second
 */
 bool Drive::turnToAngle(double angle, bool enabled){
-  turnInput = IMU.getX();
+  turnInput = fixAngle(IMU.getX());
   turnSetpoint = angle;
-  turnPID.Compute();
+  double error = (angle-turnInput);
+  if(turnInput < -135){
+    error -= 360;
+  }
+  turnPID.Compute(error);
 
   lcd.setCursor(0, 1);
-  lcd.print(IMU.getX());
+  lcd.print(fixAngle(IMU.getX()));
 
   // if (turnPID.getError() > 0) { //invert slew rates if moving backwards
   //   upSlew = turnSlewRate;
@@ -135,30 +150,80 @@ bool Drive::turnToAngle(double angle, bool enabled){
   return booleanDelay(abs(turnPID.getError()) < turnTolerance, 500);
 }
 
-void Drive::navigation(bool enabled){
+void Drive::navigation(bool enabled, double wallDistanceSetpoint){
   if(enabled){
-  switch (navStates) {
-    case FOLLOWING_WALL:
-        driveStraight(1, navAngle, enabled);
-        if(walls.getFront() < 8){
-          navStates = TURNING_LEFT;
-          navAngle = wrap(navAngle - 90);
-        }
+    switch (navStates) {
+      case FOLLOWING_WALL:
+      wallError = walls.getRight() - wallDistanceSetpoint;
+      driveStraight(1, navAngle + wallError * Kp_wall, enabled);
+      if(walls.getFront() < 8){
+        navStates = TURNING_LEFT;
+        navAngle = wrap(navAngle - 90);
+      }
+      if(walls.getRight() > 900){
+        navStates = PID_FORWARD;
+      }
       break;
 
-    case TURNING_LEFT:
+      case TURNING_LEFT:
       if(turnToAngle(navAngle, enabled)){
         navStates = FOLLOWING_WALL;
       }
       break;
 
-    case STOPPING:
+      case TURNING_RIGHT:
+      if(turnToAngle(navAngle, enabled)){
+        if(walls.getFront() > 25){
+          navStates = PID_FORWARD_LONG;
+        } else {
+          navStates = PID_FORWARD;
+        }
+      }
+      break;
+
+      case PID_FORWARD:
+      if(driveDistance(8, navAngle, enabled)){
+        if(walls.getFront() < 25){
+          navStates = FOLLOWING_WALL;
+        } else {
+          navStates = TURNING_RIGHT;
+          navAngle = wrap(navAngle + 90);
+        }
+
+      }
+      break;
+
+      case PID_FORWARD_LONG:
+      if(driveDistance(20, navAngle, enabled)){
+        if(walls.getRight() > 900){
+          navStates = TURNING_RIGHT;
+          navAngle = wrap(navAngle + 90);
+        } else {
+          navStates = FOLLOWING_WALL;
+        }
+      }
+      break;
+
+
+      case STOPPING:
       arcadeDrive(0, 0);
       break;
-  }
+    }
   } else {
     arcadeDrive(0, 0);
   }
+}
+
+double Drive::fixAngle(double angle){
+  //Fix angle
+  while(angle>180){
+    angle-=360;
+  }
+  while(angle<=-180){
+    angle+=360;
+  }
+
+  return angle;
 }
 
 /* control drive motors
@@ -180,12 +245,12 @@ int Drive::frcToServo(double input){
 *  @param delay  the time the input must be true to return true
 *  @return true when in range for specified time
 */bool Drive::booleanDelay(bool latch, unsigned int delay){
-  if(!latch){
-    lastLatched = millis();
-    return false;
-  } else {
-    return millis() - lastLatched > delay;
-  }
+if(!latch){
+  lastLatched = millis();
+  return false;
+} else {
+  return millis() - lastLatched > delay;
+}
 }
 
 //run odometry funciton (odom is private to drive)

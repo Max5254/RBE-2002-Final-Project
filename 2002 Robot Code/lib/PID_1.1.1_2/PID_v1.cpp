@@ -83,6 +83,43 @@ bool PID::Compute()
    else return false;
 }
 
+bool PID::Compute(double _error)
+{
+   if(!inAuto) return false;
+   unsigned long now = millis();
+   unsigned long timeChange = (now - lastTime);
+   if(timeChange>=SampleTime)
+   {
+      /*Compute all the working error variables*/
+	  double input = *myInput;
+      error = _error;
+
+      if(IRange != 0 && abs(error) < IRange){
+      ITerm+= (ki * error);
+      if(ITerm > outMax) ITerm= outMax;
+      else if(ITerm < outMin) ITerm= outMin;
+    } else {
+      ITerm = 0;
+    }
+
+
+       dInput = (input - lastInput);
+
+      /*Compute PID Output*/
+    double output = kp * error - kd * dInput + ITerm;
+
+	  if(output > outMax) output = outMax;
+      else if(output < outMin) output = outMin;
+	  *myOutput = output;
+
+      /*Remember some variables for next time*/
+      lastInput = input;
+      lastTime = now;
+	  return true;
+   }
+   else return false;
+}
+
 
 /* SetTunings(...)*************************************************************
  * This function allows the controller's dynamic performance to be adjusted.

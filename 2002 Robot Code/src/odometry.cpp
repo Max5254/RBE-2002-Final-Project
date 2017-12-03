@@ -39,9 +39,9 @@ void Odom::track(){
 
   // //Wrap theta
   // if(theta > 180)
-  // theta = theta - 360;
+  // theta -= 360;
   // if(theta < -180)
-  // theta = 360 + theta;
+  // theta += 360;
 
   //add new componets
   y += avgIn * cos((theta * 3.14) / 180);

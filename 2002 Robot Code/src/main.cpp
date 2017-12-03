@@ -89,6 +89,7 @@ Serial.println("1");
 setLEDs(ORANGE);
 IMU.initialize();
 IMU.reset(0);
+
 Serial.println("2");
 drive.initialize(leftDrivePort,rightDrivePort); // must be after IMU
 
@@ -161,9 +162,9 @@ void printThings(){
       break;
       case 5: // Line
         setLEDs(PURPLE);
-        lcd.print("Line Sensor");
+        lcd.print("Sharp Sensor");
         lcd.setCursor(0, 1);
-        lcd.print(analogRead(lineSensorPort));
+        lcd.print(analogRead(sharpPort));
         break;
       case 6: // odom
         lcd.print("Odometry (x y z)");
@@ -200,7 +201,7 @@ fan.setFan(getFanButton() && false);
 
 
 // if(getFanButton()){
-//   while(!drive.turnToAngle(180, true));
+//   while(!drive.turnToAngle(90, true));
 //   // drive.arcadeDrive(0, 1);
 // } else {
 //   drive.arcadeDrive(0, 0);
@@ -221,8 +222,10 @@ if(getFanButton() && !lastFan) {
 }
 lastFan = getFanButton();
 
-drive.navigation(enabled);
-//Serial.println(drive.getRightEncoder());
+drive.navigation(enabled, 5);
+// drive.driveStraight(1, 180, true);
+// Serial.println(drive.getRightEncoder());
+
 
 
 // Serial.println(analogRead(A1));
