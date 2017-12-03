@@ -10,7 +10,7 @@
 
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
-  #include <avr/power.h>
+#include <avr/power.h>
 #endif
 
 LiquidCrystal lcd(40,41,42,43,44,45);
@@ -83,17 +83,17 @@ void setup() {
   strip.begin();
   strip.show(); // Initialize all pixels to 'off'
 
-setLEDs(RED);
-walls.initialize(frontTriggerPort, frontEchoPort, rightTriggerPort, rightEchoPort);
-flame.initialize();
-fan.initialize(fanPort);
-Serial.println("1");
-setLEDs(ORANGE);
-IMU.initialize();
-IMU.reset(0);
+  setLEDs(RED);
+  walls.initialize(frontTriggerPort, frontEchoPort, rightTriggerPort, rightEchoPort);
+  flame.initialize();
+  fan.initialize(fanPort);
+  Serial.println("1");
+  setLEDs(ORANGE);
+  IMU.initialize();
+  IMU.reset(0);
 
-Serial.println("2");
-drive.initialize(leftDrivePort,rightDrivePort); // must be after IMU
+  Serial.println("2");
+  drive.initialize(leftDrivePort,rightDrivePort); // must be after IMU
 
 
   setLEDs(GREEN);
@@ -122,6 +122,17 @@ bool getFanButton(){
   return !digitalRead(fanButtonPort);
 }
 
+void logCameraCalibration(){
+  Serial.print(IMU.getX());
+  Serial.print(", ");
+  Serial.print((flame.getX1()-576)*-0.0396);
+  Serial.print(", ");
+  Serial.println(flame.getX1());
+  Serial.println(drive.angleDiff(25.3, 180.1));
+  Serial.println(drive.angleDiff(25.3, 180.1));
+
+}
+
 int state = 3;
 int numStates = 6;
 bool lastPressed, lastFan = false;
@@ -137,47 +148,47 @@ void printThings(){
   lcd.setCursor(0, 0);
   switch (state) {
     case 1: // front sensor
-      setLEDs(GREEN);
-      lcd.print("Front Wall (in)");
-      lcd.setCursor(0, 1);
-      lcd.print(walls.getFront());
-      break;
+    setLEDs(GREEN);
+    lcd.print("Front Wall (in)");
+    lcd.setCursor(0, 1);
+    lcd.print(walls.getFront());
+    break;
     case 2: // right sensor
-      setLEDs(BLUE);
-      lcd.print("Right Wall (in)");
-      lcd.setCursor(0, 1);
-      lcd.print(walls.getRight());
-      break;
+    setLEDs(BLUE);
+    lcd.print("Right Wall (in)");
+    lcd.setCursor(0, 1);
+    lcd.print(walls.getRight());
+    break;
     case 3: // IMU
-      setLEDs(YELLOW);
-      lcd.print("IMU Heading");
-      lcd.setCursor(0, 1);
-      lcd.print(IMU.getX());
-      break;
+    setLEDs(YELLOW);
+    lcd.print("IMU Heading");
+    lcd.setCursor(0, 1);
+    lcd.print(IMU.getX());
+    break;
     case 4: // IR
-      setLEDs(RED);
-      lcd.print("IR Reading");
-      lcd.setCursor(0, 1);
-      lcd.print(flame.getX1());
-      lcd.setCursor(7, 1);
-      lcd.print(flame.getY1());
-      break;
-      case 5: // Line
-        setLEDs(PURPLE);
-        lcd.print("Line Sensor");
-        lcd.setCursor(0, 1);
-        lcd.print(analogRead(lineSensorPort));
-        break;
-      case 6: // odom
-        lcd.print("Odometry (x y z)");
-        lcd.setCursor(0, 1);
-        lcd.print(drive.getX());
-        lcd.setCursor(6, 1);
-        lcd.print(drive.getY());
-        lcd.setCursor(12, 1);
-        lcd.print(drive.getTheta());
-        break;
-        }
+    setLEDs(RED);
+    lcd.print("IR Reading");
+    lcd.setCursor(0, 1);
+    lcd.print(flame.getX1());
+    lcd.setCursor(7, 1);
+    lcd.print(flame.getY1());
+    break;
+    case 5: // Line
+    setLEDs(PURPLE);
+    lcd.print("Line Sensor");
+    lcd.setCursor(0, 1);
+    lcd.print(analogRead(lineSensorPort));
+    break;
+    case 6: // odom
+    lcd.print("Odometry (x y z)");
+    lcd.setCursor(0, 1);
+    lcd.print(drive.getX());
+    lcd.setCursor(6, 1);
+    lcd.print(drive.getY());
+    lcd.setCursor(12, 1);
+    lcd.print(drive.getTheta());
+    break;
+  }
 }
 
 ///////////////
@@ -185,53 +196,46 @@ void printThings(){
 ///////////////
 void loop() {
 
-// Serial.println(analogRead(A0));
-// Serial.println(IMU.getX());
-// lcd.setCursor(0, 0 );
-// lcd.print("hello");
-// Serial.println("hello");
-drive.odometry();
-walls.periodicPing(400,200);
+  // Serial.println(analogRead(A0));
+  // Serial.println(IMU.getX());
+  // lcd.setCursor(0, 0 );
+  // lcd.print("hello");
+  // Serial.println("hello");
+  drive.odometry();
+  walls.periodicPing(100,100);
 
 
 
-// Serial.println(flame.getX1());
-printThings();
-fan.setFan(getFanButton() && false);
+  // Serial.println(flame.getX1());
+  printThings();
+  fan.setFan(getFanButton() && false);
 
 
 
-// if(getFanButton()){
-//   while(!drive.turnToAngle(90, true));
-//   // drive.arcadeDrive(0, 1);
-// } else {
-//   drive.arcadeDrive(0, 0);
-// }
+  // if(getFanButton()){
+  //   while(!drive.turnToAngle(90, true));
+  //   // drive.arcadeDrive(0, 1);
+  // } else {
+  //   drive.arcadeDrive(0, 0);
+  // }
 
 
 
-if(getFanButton() && !lastFan) {
-  //enabled = !enabled;
-  Serial.print(IMU.getX());
-  Serial.print(", ");
-  Serial.print((flame.getX1()-576)*-0.0396);
-  Serial.print(", ");
-  Serial.println(flame.getX1());
-  Serial.println(drive.angleDiff(25.3, 180.1));
-  Serial.println(drive.angleDiff(25.3, 180.1));
+  if(getFanButton() && !lastFan) {
+    enabled = !enabled;
 
-}
+  }
 
-// Serial.println(walls.getLoopDelay());
-lastFan = getFanButton();
+  // Serial.println(walls.getLoopDelay());
+  lastFan = getFanButton();
 
-drive.navigation(enabled, 5);
-// drive.driveStraight(1, 180, true);
-// Serial.println(drive.getRightEncoder());
+  drive.navigation(enabled, 6.5);
+  // drive.driveStraight(1, 180, true);
+  // Serial.println(drive.getRightEncoder());
 
 
 
-// Serial.println(analogRead(A1));
+  // Serial.println(analogRead(A1));
 
   delay(50 - walls.getLoopDelay());
 }

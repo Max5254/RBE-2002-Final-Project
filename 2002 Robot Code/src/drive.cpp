@@ -50,7 +50,7 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
   driveSetpoint = setpoint;
   drivePID.Compute();
 
-  straightPID.Compute(angleDiff(IMU.getX(), angle));
+  straightPID.Compute(angleDiff(angle, IMU.getX()));
 
 
   // if (drivePID.getError() > 0) { //invert slew gains if setpoint is backwards
@@ -89,7 +89,7 @@ bool Drive::driveDistance(double setpoint, double angle, bool enabled){
 }
 
 void Drive::driveStraight(double speed, double angle, bool enabled){
-  straightPID.Compute(angleDiff(IMU.getX(), angle));
+  straightPID.Compute(angleDiff(angle, IMU.getX()));
 
 
   Serial.println(straightPID.getError());
@@ -104,10 +104,12 @@ void Drive::driveStraight(double speed, double angle, bool enabled){
 *  @return true when in range half a second
 */
 bool Drive::turnToAngle(double angle, bool enabled){
-  turnPID.Compute(angleDiff(IMU.getX(), angle));
+  turnPID.Compute(angleDiff(angle, IMU.getX()));
 
   lcd.setCursor(0, 1);
   lcd.print(fixAngle(IMU.getX()));
+  lcd.setCursor(8, 1);
+  lcd.print(angleDiff(angle, IMU.getX()));
 
   arcadeDrive(0, turnOutputDesired);
 
@@ -117,6 +119,9 @@ bool Drive::turnToAngle(double angle, bool enabled){
 
 void Drive::navigation(bool enabled, double wallDistanceSetpoint){
   if(enabled){
+    lcd.setCursor(14, 0);
+    lcd.print(navStates);
+
     switch (navStates) {
       case FOLLOWING_WALL:
       wallError = walls.getRight() - wallDistanceSetpoint;
@@ -138,29 +143,25 @@ void Drive::navigation(bool enabled, double wallDistanceSetpoint){
 
       case TURNING_RIGHT:
       if(turnToAngle(navAngle, enabled)){
-        if(walls.getFront() > 25){
-          navStates = PID_FORWARD_LONG;
-        } else {
-          navStates = PID_FORWARD;
-        }
+        // if(walls.getFront() > 20){
+        //   navStates = PID_FORWARD_LONG;
+        // } else {
+        //   navStates = PID_FORWARD;
+        // }
+        navStates = PID_FORWARD_LONG;
       }
       break;
 
       case PID_FORWARD:
-      if(driveDistance(8, navAngle, enabled)){
-        if(walls.getFront() < 25){
-          navStates = FOLLOWING_WALL;
-        } else {
+      if(driveDistance(7, navAngle, enabled)){
           navStates = TURNING_RIGHT;
           navAngle = wrap(navAngle + 90);
-        }
-
       }
       break;
 
       case PID_FORWARD_LONG:
-      if(driveDistance(20, navAngle, enabled)){
-        if(walls.getRight() > 900){
+      if(driveDistance(19, navAngle, enabled)){
+        if(walls.getRight() > 10){
           navStates = TURNING_RIGHT;
           navAngle = wrap(navAngle + 90);
         } else {

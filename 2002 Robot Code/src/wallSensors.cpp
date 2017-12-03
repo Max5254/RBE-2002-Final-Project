@@ -61,6 +61,6 @@ digitalWrite(trigPin, LOW);
 // Reads the echoPin, returns the sound wave travel time in microseconds
 duration = pulseIn(echoPin, HIGH, 5000);
 // Calculating the distance
-distance = duration*0.034/2;
+distance = duration*0.034/2.0;
 return (distance > 0 ? distance : 2600) / 2.54;  // scale to inches
 }
