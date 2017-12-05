@@ -44,8 +44,11 @@ private:
   PID_FORWARD,
   PID_FORWARD_LONG,
   TURNING_RIGHT,
-  STOPPING
+  STOPPING,
+  PID_WALL
 };
+
+double PIDWallDistance;
 
 int navAngle;
 
@@ -79,7 +82,7 @@ navigationStates navStates = FOLLOWING_WALL;
   double turnNegativeSlewRate = 0.5;
   double turnTolerance = 1.5;
   double turnInput, turnOutputDesired, turnOutput, turnSetpoint;
-  double Kp_turn = 0.034, Ki_turn = 0.05, Kd_turn = 0.004; //old .045,.017,.004
+  double Kp_turn = 0.027, Ki_turn = 0.09, Kd_turn = 0.006; //old .045,.017,.004
   PID turnPID;
 
   double wallError;

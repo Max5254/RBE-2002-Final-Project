@@ -191,6 +191,8 @@ void printThings(){
   }
 }
 
+bool seesCandle = false;
+
 ///////////////
 // MAIN LOOP //
 ///////////////
@@ -208,7 +210,7 @@ void loop() {
 
   // Serial.println(flame.getX1());
   printThings();
-  fan.setFan(getFanButton() && false);
+  // fan.setFan(getFanButton() && false);
 
 
 
@@ -229,7 +231,10 @@ void loop() {
   // Serial.println(walls.getLoopDelay());
   lastFan = getFanButton();
 
-  drive.navigation(enabled, 6.5);
+  seesCandle = flame.getX1() < 700;
+  fan.setFan(seesCandle);
+
+  drive.navigation(enabled && !seesCandle, 6.5);
   // drive.driveStraight(1, 180, true);
   // Serial.println(drive.getRightEncoder());
 
