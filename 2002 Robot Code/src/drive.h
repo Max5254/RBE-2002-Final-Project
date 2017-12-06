@@ -82,7 +82,7 @@ navigationStates navStates = FOLLOWING_WALL;
   double turnNegativeSlewRate = 0.5;
   double turnTolerance = 1.5;
   double turnInput, turnOutputDesired, turnOutput, turnSetpoint;
-  double Kp_turn = 0.027, Ki_turn = 0.09, Kd_turn = 0.006; //old .045,.017,.004
+  double Kp_turn = 0.01, Ki_turn = 0.005, Kd_turn = 0.0039, Kf_turn = 0.21; //old .045,.017,.004
   PID turnPID;
 
   double wallError;

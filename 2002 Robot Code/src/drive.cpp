@@ -3,7 +3,7 @@
 Drive::Drive() :
 drivePID(&driveInput,&driveOutputDesired,&driveSetpoint,Kp_drive,Ki_drive,Kd_drive,DIRECT),
 straightPID(&straightInput,&straightOutput,&straightSetpoint,Kp_straight,Ki_straight,Kd_straight,DIRECT),
-turnPID(&turnInput,&turnOutputDesired,&turnSetpoint,Kp_turn,Ki_turn,Kd_turn,DIRECT),
+turnPID(&turnInput,&turnOutputDesired,&turnSetpoint,Kp_turn,Ki_turn,Kd_turn,Kf_turn,DIRECT),
 odom(0,0,0)
 { }
 
@@ -143,7 +143,7 @@ void Drive::navigation(bool enabled, double wallDistanceSetpoint){
 
       case TURNING_RIGHT:
       if(turnToAngle(navAngle, enabled)){
-        if(walls.getFront() > 30){
+        if(walls.getFront() > 20){
           navStates = PID_FORWARD_LONG;
         } else {
           PIDWallDistance = walls.getFront() - 10;

@@ -13,12 +13,41 @@
 
 #include <PID_v1.h>
 
+int sign(double value){
+  return value >= 0 ? 1 : -1;
+}
+
 /*Constructor (...)*********************************************************
  *    The parameters specified here are those for for which we can't set up
  *    reliable defaults, so we need to have the user set them.
  ***************************************************************************/
 PID::PID(double* Input, double* Output, double* Setpoint,
         double Kp, double Ki, double Kd, int ControllerDirection)
+{
+    myOutput = Output;
+    myInput = Input;
+    mySetpoint = Setpoint;
+	inAuto = false;
+
+	PID::SetOutputLimits(0, 255);				//default output limit corresponds to
+												//the arduino pwm limits
+
+    SampleTime = 100;							//default Controller Sample Time is 0.1 seconds
+    IRange = 0;
+    dInput = 0;
+
+    PID::SetControllerDirection(ControllerDirection);
+    PID::SetTunings(Kp, Ki, Kd, 0);
+
+    lastTime = millis()-SampleTime;
+}
+
+/*Constructor (...)*********************************************************
+ *    The parameters specified here are those for for which we can't set up
+ *    reliable defaults, so we need to have the user set them.
+ ***************************************************************************/
+PID::PID(double* Input, double* Output, double* Setpoint,
+        double Kp, double Ki, double Kd, double Kf, int ControllerDirection)
 {
 
     myOutput = Output;
@@ -34,7 +63,7 @@ PID::PID(double* Input, double* Output, double* Setpoint,
     dInput = 0;
 
     PID::SetControllerDirection(ControllerDirection);
-    PID::SetTunings(Kp, Ki, Kd);
+    PID::SetTunings(Kp, Ki, Kd, Kf);
 
     lastTime = millis()-SampleTime;
 }
@@ -107,6 +136,9 @@ bool PID::Compute(double _error)
 
       /*Compute PID Output*/
     double output = kp * error - kd * dInput + ITerm;
+    if (sign(output) == sign(error*kp)){
+      output += kf * sign(output);
+    }
 
 	  if(output > outMax) output = outMax;
       else if(output < outMin) output = outMin;
@@ -128,12 +160,24 @@ bool PID::Compute(double _error)
  ******************************************************************************/
 void PID::SetTunings(double Kp, double Ki, double Kd)
 {
-   if (Kp<0 || Ki<0 || Kd<0) return;
+   SetTunings(Kp, Ki, Kd, 0);
+}
 
-   dispKp = Kp; dispKi = Ki; dispKd = Kd;
+
+/* SetTunings(...)*************************************************************
+ * This function allows the controller's dynamic performance to be adjusted.
+ * it's called automatically from the constructor, but tunings can also
+ * be adjusted on the fly during normal operation
+ ******************************************************************************/
+void PID::SetTunings(double Kp, double Ki, double Kd, double Kf)
+{
+   if (Kp<0 || Ki<0 || Kd<0 || Kf<0) return;
+
+   dispKp = Kp; dispKi = Ki; dispKd = Kd; dispKf = Kf;
 
    double SampleTimeInSec = ((double)SampleTime)/1000;
    kp = Kp;
+   kf = Kf;
    ki = Ki * SampleTimeInSec;
    kd = Kd / SampleTimeInSec;
 
@@ -142,6 +186,7 @@ void PID::SetTunings(double Kp, double Ki, double Kd)
       kp = (0 - kp);
       ki = (0 - ki);
       kd = (0 - kd);
+      kf = (0 - kf);
    }
 }
 
