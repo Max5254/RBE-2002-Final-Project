@@ -143,7 +143,7 @@ void Drive::navigation(bool enabled, double wallDistanceSetpoint){
 
       case TURNING_RIGHT:
       if(turnToAngle(navAngle, enabled)){
-        if(walls.getFront() > 24){
+        if(walls.getFront() > 30){
           navStates = PID_FORWARD_LONG;
         } else {
           PIDWallDistance = walls.getFront() - 10;

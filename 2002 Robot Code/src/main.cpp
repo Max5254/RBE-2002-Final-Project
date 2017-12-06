@@ -148,25 +148,25 @@ void printThings(){
   lcd.setCursor(0, 0);
   switch (state) {
     case 1: // front sensor
-    setLEDs(GREEN);
+    // setLEDs(GREEN);
     lcd.print("Front Wall (in)");
     lcd.setCursor(0, 1);
     lcd.print(walls.getFront());
     break;
     case 2: // right sensor
-    setLEDs(BLUE);
+    // setLEDs(BLUE);
     lcd.print("Right Wall (in)");
     lcd.setCursor(0, 1);
     lcd.print(walls.getRight());
     break;
     case 3: // IMU
-    setLEDs(YELLOW);
+    // setLEDs(YELLOW);
     lcd.print("IMU Heading");
     lcd.setCursor(0, 1);
     lcd.print(IMU.getX());
     break;
     case 4: // IR
-    setLEDs(RED);
+    // setLEDs(RED);
     lcd.print("IR Reading");
     lcd.setCursor(0, 1);
     lcd.print(flame.getX1());
@@ -174,7 +174,7 @@ void printThings(){
     lcd.print(flame.getY1());
     break;
     case 5: // Line
-    setLEDs(PURPLE);
+    // setLEDs(PURPLE);
     lcd.print("Line Sensor");
     lcd.setCursor(0, 1);
     lcd.print(analogRead(lineSensorPort));
@@ -233,6 +233,9 @@ void loop() {
 
   seesCandle = flame.getX1() < 700;
   fan.setFan(seesCandle);
+  if(seesCandle){
+    setLEDs(RED);
+  }
 
   drive.navigation(enabled && !seesCandle, 6.5);
   // drive.driveStraight(1, 180, true);
