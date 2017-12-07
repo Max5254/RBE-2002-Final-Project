@@ -79,10 +79,10 @@ void BNO055::initialize(){
         while (1);
     }
 
-   loadCalibration();
+   //loadCalibration();
 
    bno.setExtCrystalUse(true);
-   bno.setMode(0X08);
+   // bno.setMode(0X08);
 
    delay(2000);
 
