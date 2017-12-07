@@ -1,9 +1,15 @@
 #include "flameSensor.h"
 
+#define NO_VALUE 100
+#define THETA_RANGE 4
 
 flameSensor::flameSensor(){}
 
 void flameSensor::initialize(){
+  bestX = NO_VALUE;
+  bestY = NO_VALUE;
+  bestXt = THETA_RANGE;
+  bestYt = THETA_RANGE;
  slaveAddress = IRsensorAddress >> 1;   // This results in 0x21 as the address to pass to TWI
  Wire.begin();
  // IR sensor initialize
@@ -92,6 +98,26 @@ int flameSensor::getActive(){
     }
   }
   return 0;
+}
+
+bool flameSensor::checkFlame(double x, double y, double t){
+  if (abs(fmod(t+360,180)-90) < abs(bestXt)){
+    bestX = x;
+    bestXt = fmod(t+360,180)-90;
+  }
+  if (abs(fmod(t+360,180)) < abs(bestYt)){
+    bestY = y;
+    bestYt = fmod(t+360,180);
+  }
+  return abs(bestXt) < THETA_RANGE && abs(bestYt) < THETA_RANGE;
+}
+
+double flameSensor::getCandleX(){
+  return bestX;
+}
+
+double flameSensor::getCandleY(){
+  return bestY;
 }
 
 int flameSensor::getX1(){

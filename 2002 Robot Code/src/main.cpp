@@ -134,7 +134,7 @@ void logCameraCalibration(){
 }
 
 int state = 3;
-int numStates = 6;
+int numStates = 7;
 bool lastPressed, lastFan = false;
 
 void printThings(){
@@ -188,6 +188,15 @@ void printThings(){
     lcd.setCursor(12, 1);
     lcd.print(drive.getTheta());
     break;
+    case 7: // odom
+    lcd.print("Candle Pos");
+    lcd.setCursor(0, 1);
+    lcd.print(flame.getCandleX());
+    lcd.setCursor(6, 1);
+    lcd.print(flame.getCandleY());
+    lcd.setCursor(12, 1);
+    lcd.print(drive.getTheta() - flame.getHAngle());
+    break;
   }
 }
 
@@ -230,8 +239,8 @@ void loop() {
 
   // Serial.println(walls.getLoopDelay());
   lastFan = getFanButton();
+  seesCandle = flame.getX1() < 700 && flame.checkFlame(drive.getX(), drive.getY(), drive.getTheta() - flame.getHAngle());
 
-  seesCandle = flame.getX1() < 700;
   fan.setFan(seesCandle);
   if(seesCandle){
     setLEDs(RED);

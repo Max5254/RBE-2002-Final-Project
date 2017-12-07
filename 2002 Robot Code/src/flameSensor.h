@@ -15,10 +15,14 @@ public:
   int getActive();
   void get();
   double getHAngle();
+  bool checkFlame(double x, double y, double t);
+  double getCandleX();
+  double getCandleY();
 
 
 
 private:
+  double bestX, bestXt, bestY, bestYt;
 
 void Write_2bytes(byte,byte);
 
