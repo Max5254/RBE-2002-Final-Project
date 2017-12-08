@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#define NO_VALUE 100
 
 class flameSensor{
 public:

@@ -41,6 +41,7 @@ const int lineSensorPort = A2;
 
 
 bool enabled = false;
+bool sawCandle = false;
 
 // Drive drive;
 BNO055 IMU;
@@ -96,7 +97,7 @@ void setup() {
   drive.initialize(leftDrivePort,rightDrivePort); // must be after IMU
 
 
-  setLEDs(GREEN);
+  setLEDs(PURPLE);
 }
 
 
@@ -182,14 +183,14 @@ void printThings(){
     case 6: // odom
     lcd.print("Odometry (x y z)");
     lcd.setCursor(0, 1);
-    lcd.print(drive.getX());
-    lcd.setCursor(6, 1);
     lcd.print(drive.getY());
+    lcd.setCursor(6, 1);
+    lcd.print(-1*drive.getX());
     lcd.setCursor(12, 1);
     lcd.print(drive.getTheta());
     break;
     case 7: // odom
-    lcd.print("Candle Pos");
+    lcd.print("Candle (x y z)");
     lcd.setCursor(0, 1);
     lcd.print(flame.getCandleX(),1);
     lcd.setCursor(6, 1);
@@ -239,17 +240,31 @@ void loop() {
 
   // Serial.println(walls.getLoopDelay());
   lastFan = getFanButton();
-  seesCandle = flame.getX1() < 700 && flame.checkFlame(drive.getX(), drive.getY(), drive.getTheta() - flame.getHAngle());
+  seesCandle = flame.getX1() < 1023 && flame.checkFlame(drive.getY(), -1*drive.getX(), drive.getTheta() - flame.getHAngle());
 
   bool seesCandleLag = inverseBooleanDelay(seesCandle,1500);
 
   fan.setFan(seesCandleLag);
-  if(seesCandleLag){
-    setLEDs(RED);
+
+  if(seesCandle){
     drive.turnToAngle(drive.getTheta() - flame.getHAngle(), true);
   }
+  else{
+    drive.navigation(enabled && !seesCandleLag, 6.5);
+  }
 
-  drive.navigation(enabled && !seesCandleLag, 6.5);
+  if(seesCandleLag){
+    setLEDs(RED);
+    sawCandle = true;
+    state = 7;
+  }
+
+  if (sawCandle && !seesCandleLag){
+    setLEDs(GREEN);
+  }
+  else if (flame.getCandleX() == NO_VALUE ^ flame.getCandleY() == NO_VALUE){
+    setLEDs(BLUE);
+  }
   // drive.driveStraight(1, 180, true);
   // Serial.println(drive.getRightEncoder());
 

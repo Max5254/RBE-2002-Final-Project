@@ -1,6 +1,5 @@
 #include "flameSensor.h"
 
-#define NO_VALUE 100
 #define THETA_RANGE 4
 
 flameSensor::flameSensor(){}
@@ -101,13 +100,13 @@ int flameSensor::getActive(){
 }
 
 bool flameSensor::checkFlame(double x, double y, double t){
-  if (abs(fmod(t+360,180)-90) < abs(bestXt)){
+  if (abs(fmod(t+360,180)) < abs(bestXt)){
     bestX = x;
-    bestXt = fmod(t+360,180)-90;
+    bestXt = fmod(t+360,180);
   }
-  if (abs(fmod(t+360,180)) < abs(bestYt)){
+  if (abs(fmod(t+360,180)-90) < abs(bestYt)){
     bestY = y;
-    bestYt = fmod(t+360,180);
+    bestYt = fmod(t+360,180-90);
   }
   return abs(bestXt) < THETA_RANGE && abs(bestYt) < THETA_RANGE;
 }
