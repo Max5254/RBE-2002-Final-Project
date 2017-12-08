@@ -39,17 +39,19 @@ private:
   Servo rightDrive;
 
   enum navigationStates {
-  FOLLOWING_WALL,
-  TURNING_LEFT,
-  PID_FORWARD,
-  PID_FORWARD_LONG,
-  TURNING_RIGHT,
-  STOPPING,
-  PID_WALL
+  FOLLOWING_WALL,    //0
+  TURNING_LEFT,      //1
+  PID_FORWARD,       //2
+  PID_BACKWARDS,     //3
+  DRIVE_UNTIL_WALL,  //4
+  PID_FORWARD_LONG,  //5
+  TURNING_RIGHT,     //6
+  STOPPING,          //7
+  PID_WALL           //8
 };
 
 double PIDWallDistance;
-
+bool notHomeAnymore, hitGap = false;
 int navAngle;
 
 navigationStates navStates = FOLLOWING_WALL;

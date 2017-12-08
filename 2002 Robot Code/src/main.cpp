@@ -191,9 +191,9 @@ void printThings(){
     case 7: // odom
     lcd.print("Candle Pos");
     lcd.setCursor(0, 1);
-    lcd.print(flame.getCandleX());
+    lcd.print(flame.getCandleX(),1);
     lcd.setCursor(6, 1);
-    lcd.print(flame.getCandleY());
+    lcd.print(flame.getCandleY(),1);
     lcd.setCursor(12, 1);
     lcd.print(drive.getTheta() - flame.getHAngle());
     break;
@@ -241,12 +241,15 @@ void loop() {
   lastFan = getFanButton();
   seesCandle = flame.getX1() < 700 && flame.checkFlame(drive.getX(), drive.getY(), drive.getTheta() - flame.getHAngle());
 
-  fan.setFan(seesCandle);
-  if(seesCandle){
+  bool seesCandleLag = inverseBooleanDelay(seesCandle,1500);
+
+  fan.setFan(seesCandleLag);
+  if(seesCandleLag){
     setLEDs(RED);
+    drive.turnToAngle(drive.getTheta() - flame.getHAngle(), true);
   }
 
-  drive.navigation(enabled && !seesCandle, 6.5);
+  drive.navigation(enabled && !seesCandleLag, 6.5);
   // drive.driveStraight(1, 180, true);
   // Serial.println(drive.getRightEncoder());
 

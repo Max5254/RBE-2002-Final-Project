@@ -122,6 +122,10 @@ void Drive::navigation(bool enabled, double wallDistanceSetpoint){
     lcd.setCursor(14, 0);
     lcd.print(navStates);
 
+    if(analogRead(A2) > 900){
+      navStates = PID_BACKWARDS;
+    }
+
     switch (navStates) {
       case FOLLOWING_WALL:
       wallError = walls.getRight() - wallDistanceSetpoint;
@@ -129,21 +133,31 @@ void Drive::navigation(bool enabled, double wallDistanceSetpoint){
       if(walls.getFront() < 8){
         navStates = TURNING_LEFT;
         navAngle = wrap(navAngle - 90);
+        notHomeAnymore = true;
       }
       if(walls.getRight() > 900){
         navStates = PID_FORWARD;
+        notHomeAnymore = true;
+      }
+      if(abs(odom.getX()) < 5 && abs(odom.getY()) < 5 && notHomeAnymore){
+        navStates = STOPPING;
       }
       break;
 
       case TURNING_LEFT:
       if(turnToAngle(navAngle, enabled)){
+        if(hitGap){
+          navStates = DRIVE_UNTIL_WALL;
+          hitGap = false;
+        } else {
         navStates = FOLLOWING_WALL;
+      }
       }
       break;
 
       case TURNING_RIGHT:
       if(turnToAngle(navAngle, enabled)){
-        if(walls.getFront() > 25){ //previously 20
+        if(walls.getFront() > 27){ //previously 20 --> 25
           navStates = PID_FORWARD_LONG;
         } else {
           PIDWallDistance = walls.getFront() - 10;
@@ -158,6 +172,22 @@ void Drive::navigation(bool enabled, double wallDistanceSetpoint){
           navStates = TURNING_RIGHT;
           navAngle = wrap(navAngle + 90);
       }
+      break;
+
+      case PID_BACKWARDS:
+      if(driveDistance(-3, navAngle, enabled)){
+        navStates = TURNING_LEFT;
+        navAngle = wrap(navAngle - 90);
+        hitGap = true;
+      }
+      break;
+
+      case DRIVE_UNTIL_WALL:
+        driveStraight(0.75, navAngle, enabled);
+        if(walls.getRight() < 12){
+          navStates = FOLLOWING_WALL;
+        }
+
       break;
 
       case PID_WALL:

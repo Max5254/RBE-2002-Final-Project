@@ -18,6 +18,15 @@ bool booleanDelay(bool latch, unsigned int delay){
     return millis() - lastLatched > delay;
   }
 }
+unsigned int lastLatchedInverse;
+bool inverseBooleanDelay(bool latch, unsigned int delay){
+  if(latch){
+    lastLatchedInverse = millis();
+    return true;
+  } else {
+    return millis() - lastLatchedInverse < delay;
+  }
+}
 
 double scaleValues(double x, double in_min, double in_max, double out_min, double out_max) //modified version of map()
 {
