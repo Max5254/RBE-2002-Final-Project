@@ -7,11 +7,14 @@
 class Fan{
 public:
   Fan();
-  void initialize(int);
+  void initialize(int,int);
   void setFan(bool);
+  void setAngle(int);
 
 private:
   Servo fanMotor;
+  Servo tiltMotor;
+
 
 
 };

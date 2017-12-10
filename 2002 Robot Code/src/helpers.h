@@ -5,8 +5,8 @@
 
 double servoToFrc(int input);
 int frcToServo(double input);
-bool booleanDelay(bool latch, unsigned int delay);
-bool inverseBooleanDelay(bool latch, unsigned int delay);
+bool booleanDelay(bool latch, int delay);
+bool inverseBooleanDelay(bool latch, int delay);
 
 double scaleValues(double x, double in_min, double in_max, double out_min, double out_max);
 float wrap(float);

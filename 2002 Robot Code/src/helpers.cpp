@@ -8,9 +8,9 @@ int frcToServo(double input){ //Converts from -1 to 1 scale to a 0 180 sclase
     return 90 + (input * 90.0);
 }
 
-unsigned int lastLatched;
+long lastLatched;
 //return true only when a bool has been true for "delay" amount of time
-bool booleanDelay(bool latch, unsigned int delay){
+bool booleanDelay(bool latch, int delay){
   if(!latch){
     lastLatched = millis();
     return false;
@@ -18,8 +18,8 @@ bool booleanDelay(bool latch, unsigned int delay){
     return millis() - lastLatched > delay;
   }
 }
-unsigned int lastLatchedInverse;
-bool inverseBooleanDelay(bool latch, unsigned int delay){
+long lastLatchedInverse;
+bool inverseBooleanDelay(bool latch, int delay){
   if(latch){
     lastLatchedInverse = millis();
     return true;

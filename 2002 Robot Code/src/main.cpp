@@ -19,7 +19,7 @@ LiquidCrystal lcd(40,41,42,43,44,45);
 // IO //
 ////////
 #define LED_PIN 23
-#define NUM_PIXELS 4
+#define NUM_PIXELS 3
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_PIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 //Motors
@@ -63,7 +63,6 @@ void setLEDs(uint32_t color){ //set all 4 LEDs to specific color
   strip.setPixelColor(0,color);
   strip.setPixelColor(1,color);
   strip.setPixelColor(2,color);
-  strip.setPixelColor(3,color);
   strip.show();
 }
 
@@ -87,7 +86,7 @@ void setup() {
   setLEDs(RED);
   walls.initialize(frontTriggerPort, frontEchoPort, rightTriggerPort, rightEchoPort);
   flame.initialize();
-  fan.initialize(fanPort);
+  fan.initialize(fanPort,armPivotPort);
   Serial.println("1");
   setLEDs(ORANGE);
   IMU.initialize();
@@ -168,17 +167,24 @@ void printThings(){
     break;
     case 4: // IR
     // setLEDs(RED);
-    lcd.print("IR Reading");
+    // lcd.print("IR Reading");
+    lcd.print(flame.getVAngle());
+    lcd.setCursor(7, 0);
+    lcd.print(9+18*tan((flame.getVAngle() * 3.14) / 180));
     lcd.setCursor(0, 1);
     lcd.print(flame.getX1());
     lcd.setCursor(7, 1);
     lcd.print(flame.getY1());
+    lcd.setCursor(12, 1);
+    lcd.print(flame.getCandleZ(),2);
     break;
     case 5: // Line
     // setLEDs(PURPLE);
     lcd.print("Line Sensor");
     lcd.setCursor(0, 1);
     lcd.print(analogRead(lineSensorPort));
+    lcd.print("Line Sensor");
+    lcd.setCursor(0, 1);
     break;
     case 6: // odom
     lcd.print("Odometry (x y z)");
@@ -196,7 +202,7 @@ void printThings(){
     lcd.setCursor(6, 1);
     lcd.print(flame.getCandleY(),1);
     lcd.setCursor(12, 1);
-    lcd.print(drive.getTheta() - flame.getHAngle());
+    lcd.print(flame.getCandleZ(),2);
     break;
   }
 }
@@ -235,8 +241,10 @@ void loop() {
 
   if(getFanButton() && !lastFan) {
     enabled = !enabled;
-
   }
+
+  fan.setAngle(50);
+
 
   // Serial.println(walls.getLoopDelay());
   lastFan = getFanButton();

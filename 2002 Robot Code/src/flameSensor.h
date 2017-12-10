@@ -3,8 +3,12 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+#include "helpers.h"
+#include "Drive.h"
 
 #define NO_VALUE 100
+
+extern Drive drive;
 
 class flameSensor{
 public:
@@ -16,14 +20,16 @@ public:
   int getActive();
   void get();
   double getHAngle();
+  double getVAngle();
   bool checkFlame(double x, double y, double t);
   double getCandleX();
   double getCandleY();
+  double getCandleZ();
 
 
 
 private:
-  double bestX, bestXt, bestY, bestYt;
+  double bestX, bestXt, bestY, bestYt, bestZ, cameraVerticalTheta;
 
 void Write_2bytes(byte,byte);
 
