@@ -102,12 +102,16 @@ int flameSensor::getActive(){
 bool flameSensor::checkFlame(double x, double y, double t){
   if (abs(fmod(t+360,180)) < abs(bestXt)){
     bestX = x;
-    bestZ = 10 + abs(bestY - drive.getY())*tan((getVAngle() * 3.14) / 180);
+    bestDist = abs(bestY - y);
+    bestVAngle = getVAngle();
+    bestZ = 8 + abs(bestY - y)*tan((getVAngle() * 3.14) / 180);
     bestXt = fmod(t+360,180);
   }
   if (abs(fmod(t+360,180)-90) < abs(bestYt)){
     bestY = y;
-    bestZ = 10 + abs(bestX - drive.getX())*tan((getVAngle() * 3.14) / 180);
+    bestDist = abs(bestX - x);
+    bestVAngle = getVAngle();
+    bestZ = 8 + abs(bestX - x)*tan((getVAngle() * 3.14) / 180);
     bestYt = fmod(t+360,180-90);
   }
   return abs(bestXt) < THETA_RANGE && abs(bestYt) < THETA_RANGE;
@@ -140,5 +144,7 @@ double flameSensor::getHAngle(){
 }
 
 double flameSensor::getVAngle(){
-  return (getY1()*0.0386)-11.2;
+  // return (getY1()*0.0386)-11.2;
+  return (getY1()*0.0408)-8.81;
+
 }

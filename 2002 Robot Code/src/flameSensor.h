@@ -26,6 +26,7 @@ public:
   double getCandleY();
   double getCandleZ();
 
+  double  bestDist, bestVAngle;
 
 
 private:

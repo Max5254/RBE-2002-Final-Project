@@ -87,6 +87,7 @@ void setup() {
   walls.initialize(frontTriggerPort, frontEchoPort, rightTriggerPort, rightEchoPort);
   flame.initialize();
   fan.initialize(fanPort,armPivotPort);
+  fan.setAngle(25); //old 50
   Serial.println("1");
   setLEDs(ORANGE);
   IMU.initialize();
@@ -170,7 +171,7 @@ void printThings(){
     // lcd.print("IR Reading");
     lcd.print(flame.getVAngle());
     lcd.setCursor(7, 0);
-    lcd.print(9+18*tan((flame.getVAngle() * 3.14) / 180));
+    lcd.print(8+30*tan((flame.getVAngle() * 3.14) / 180));
     lcd.setCursor(0, 1);
     lcd.print(flame.getX1());
     lcd.setCursor(7, 1);
@@ -197,6 +198,9 @@ void printThings(){
     break;
     case 7: // odom
     lcd.print("Candle (x y z)");
+    // lcd.print(flame.bestDist,2);
+    // lcd.setCursor(7, 0);
+    // lcd.print(flame.bestVAngle,2);
     lcd.setCursor(0, 1);
     lcd.print(flame.getCandleX(),1);
     lcd.setCursor(6, 1);
@@ -208,7 +212,7 @@ void printThings(){
 }
 
 bool seesCandle = false;
-
+int turningToFlameAngle;
 ///////////////
 // MAIN LOOP //
 ///////////////
@@ -243,7 +247,7 @@ void loop() {
     enabled = !enabled;
   }
 
-  fan.setAngle(50);
+  fan.setAngle(105); //old 50
 
 
   // Serial.println(walls.getLoopDelay());
@@ -254,8 +258,11 @@ void loop() {
 
   fan.setFan(seesCandleLag);
 
-  if(seesCandle){
-    drive.turnToAngle(drive.getTheta() - flame.getHAngle(), true);
+  if(seesCandleLag){
+    if(seesCandle){
+      turningToFlameAngle = drive.getTheta() - flame.getHAngle();
+    }
+    drive.turnToAngle(turningToFlameAngle, true);
   }
   else{
     drive.navigation(enabled && !seesCandleLag, 6.5);

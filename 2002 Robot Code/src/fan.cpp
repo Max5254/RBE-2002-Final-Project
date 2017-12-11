@@ -20,5 +20,6 @@ void Fan::setFan(bool on){
 }
 
 void Fan::setAngle(int angle){
+  angle = map(angle,0,210,180,0);
   tiltMotor.write(angle);
 }
