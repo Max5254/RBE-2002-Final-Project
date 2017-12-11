@@ -139,7 +139,7 @@ void Drive::navigation(bool enabled, double wallDistanceSetpoint){
         navStates = PID_FORWARD;
         notHomeAnymore = true;
       }
-      if(abs(odom.getX()) < 5 && abs(odom.getY()) < 5 && notHomeAnymore){
+      if(abs(odom.getX()) < 5 && abs(odom.getY()) < 7 && notHomeAnymore){
         navStates = STOPPING;
       }
       break;
@@ -175,7 +175,7 @@ void Drive::navigation(bool enabled, double wallDistanceSetpoint){
       break;
 
       case PID_BACKWARDS:
-      if(driveDistance(-3, navAngle, enabled)){
+      if(driveDistance(-5, navAngle, enabled)){
         navStates = TURNING_LEFT;
         navAngle = wrap(navAngle - 90);
         hitGap = true;

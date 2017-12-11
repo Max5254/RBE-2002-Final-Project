@@ -78,3 +78,7 @@ float Odom::getRightEncoder(){
 double Odom::getX(){return x;}
 double Odom::getY(){return y;}
 double Odom::getTheta(){return theta;}
+
+double Odom::distToPoint(double x2, double y2){
+  return sqrt(pow(x - x2, 2) + pow(y - y2, 2));
+}

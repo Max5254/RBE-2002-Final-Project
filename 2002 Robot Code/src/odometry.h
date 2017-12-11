@@ -21,6 +21,7 @@ public:
   double getX();
   double getY();
   double getTheta();
+  double distToPoint(double x, double y);
 
 private:
   //Encoders

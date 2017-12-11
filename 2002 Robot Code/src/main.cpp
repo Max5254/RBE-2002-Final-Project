@@ -86,8 +86,8 @@ void setup() {
   setLEDs(RED);
   walls.initialize(frontTriggerPort, frontEchoPort, rightTriggerPort, rightEchoPort);
   flame.initialize();
+  fan.setAngle(105); //old 50
   fan.initialize(fanPort,armPivotPort);
-  fan.setAngle(25); //old 50
   Serial.println("1");
   setLEDs(ORANGE);
   IMU.initialize();
@@ -247,32 +247,30 @@ void loop() {
     enabled = !enabled;
   }
 
-  fan.setAngle(105); //old 50
 
 
   // Serial.println(walls.getLoopDelay());
   lastFan = getFanButton();
-  seesCandle = flame.getX1() < 1023 && flame.checkFlame(drive.getY(), -1*drive.getX(), drive.getTheta() - flame.getHAngle());
+  seesCandle = flame.getX1() < 1023 && (sawCandle || flame.checkFlame(drive.getY(), -1*drive.getX(), drive.getTheta() - flame.getHAngle()));
 
-  bool seesCandleLag = inverseBooleanDelay(seesCandle,1500);
+  bool seesCandleLag = inverseBooleanDelay(seesCandle,2000);
 
   fan.setFan(seesCandleLag);
 
   if(seesCandleLag){
     if(seesCandle){
       turningToFlameAngle = drive.getTheta() - flame.getHAngle();
+      fan.setAngle(90+flame.getVAngle()); //old 50
     }
     drive.turnToAngle(turningToFlameAngle, true);
+    setLEDs(RED);
+    sawCandle = true;
+    state = 7;
   }
   else{
     drive.navigation(enabled && !seesCandleLag, 6.5);
   }
 
-  if(seesCandleLag){
-    setLEDs(RED);
-    sawCandle = true;
-    state = 7;
-  }
 
   if (sawCandle && !seesCandleLag){
     setLEDs(GREEN);
