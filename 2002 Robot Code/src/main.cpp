@@ -268,7 +268,7 @@ void loop() {
     state = 7;
   }
   else{
-    drive.navigation(enabled && !seesCandleLag, 6.5);
+    drive.navigation(enabled && !seesCandleLag, 6.5, sawCandle);
   }
 
 

@@ -29,7 +29,7 @@ public:
   double getX();
   double getY();
   double getTheta();
-  void navigation(bool,double);
+  void navigation(bool,double,bool);
   float getLeftEncoder();
   float getRightEncoder();
 
@@ -62,6 +62,7 @@ navigationStates navStates = FOLLOWING_WALL;
   bool booleanDelay(bool, unsigned int);
   unsigned int lastLatched;
 
+  long lastSawWall = 0;
 
   //drive forward constants
   double driveSlewRate = 0.01;
