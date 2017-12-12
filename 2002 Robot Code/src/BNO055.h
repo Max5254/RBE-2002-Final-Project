@@ -13,6 +13,11 @@
 /* Set the delay between fresh samples */
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 
+//********
+// much of this code was adapted from this example provided by Adafruit
+// https://github.com/adafruit/Adafruit_BNO055/blob/master/examples/restore_offsets/restore_offsets.ino
+//********
+
 extern LiquidCrystal lcd;
 
 class BNO055{

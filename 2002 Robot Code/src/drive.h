@@ -38,6 +38,7 @@ private:
   Servo leftDrive;
   Servo rightDrive;
 
+  // states for navigation state machine
   enum navigationStates {
   FOLLOWING_WALL,    //0
   TURNING_LEFT,      //1
@@ -54,20 +55,15 @@ double PIDWallDistance;
 bool notHomeAnymore, hitGap = false;
 int navAngle;
 
+// init robot to begin following wall
 navigationStates navStates = FOLLOWING_WALL;
 
-
-  double fixAngle(double);
-  int frcToServo(double);
   bool booleanDelay(bool, unsigned int);
   unsigned int lastLatched;
 
   long lastSawWall = 0;
 
   //drive forward constants
-  double driveSlewRate = 0.01;
-  double driveNegativeSlewRate = 0.1;
-  double upSlew,downSlew;
   long driveStartingPoint;
   bool driveStarting = true;
   double driveTolerance = 1.5;
@@ -81,8 +77,6 @@ navigationStates navStates = FOLLOWING_WALL;
   PID straightPID;
 
   //turning constants
-  double turnSlewRate = 0.01;
-  double turnNegativeSlewRate = 0.5;
   double turnTolerance = 2;
   double turnInput, turnOutputDesired, turnOutput, turnSetpoint;
   double Kp_turn = 0.01, Ki_turn = 0.005, Kd_turn = 0.0039, Kf_turn = 0.19; //old .01, 0.005,.0039,.021

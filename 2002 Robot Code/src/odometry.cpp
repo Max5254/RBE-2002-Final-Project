@@ -17,6 +17,7 @@ void Odom::setScale(double _driveScale, double _turnScale){
   turnScale = _turnScale;
 }
 
+// periodacally call to calculate robot position 
 void Odom::track(){
   //Get delta
   long leftCount = leftEncoder.read();
@@ -34,9 +35,10 @@ void Odom::track(){
   //get average
   avgIn = (leftIn + rightIn) / 2.0;
   //Get theta
-  // theta += (leftTicks - rightTicks) / turnScale;
-  theta = IMU.getX();
+  // theta += (leftTicks - rightTicks) / turnScale; // from encoders
+  theta = IMU.getX(); // from IMU
 
+  // now done from IMU
   // //Wrap theta
   // if(theta > 180)
   // theta -= 360;
@@ -79,6 +81,7 @@ double Odom::getX(){return x;}
 double Odom::getY(){return y;}
 double Odom::getTheta(){return theta;}
 
+// get the distance between robot and given point
 double Odom::distToPoint(double x2, double y2){
   return sqrt(pow(x - x2, 2) + pow(y - y2, 2));
 }

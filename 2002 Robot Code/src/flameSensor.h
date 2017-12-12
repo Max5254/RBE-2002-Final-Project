@@ -8,7 +8,8 @@
 
 #define NO_VALUE 100
 
-extern Drive drive;
+// much of the communication is taken from the example code provided by the retailer
+// https://www.dfrobot.com/wiki/index.php/Positioning_ir_camera
 
 class flameSensor{
 public:
@@ -44,10 +45,6 @@ int i;
 int Ix[4];
 int Iy[4];
 int s;
-
-
-
-
 
 };
 

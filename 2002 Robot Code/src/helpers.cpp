@@ -18,7 +18,9 @@ bool booleanDelay(bool latch, int delay){
     return millis() - lastLatched > delay;
   }
 }
+
 long lastLatchedInverse;
+// returns true when a bool is true or has been in the past delay microseconds
 bool inverseBooleanDelay(bool latch, int delay){
   if(latch){
     lastLatchedInverse = millis();
@@ -28,13 +30,14 @@ bool inverseBooleanDelay(bool latch, int delay){
   }
 }
 
-double scaleValues(double x, double in_min, double in_max, double out_min, double out_max) //modified version of map()
+// arduino map function modified for doubles
+double scaleValues(double x, double in_min, double in_max, double out_min, double out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+// //Wrap theta between -180 and 180
 float wrap(float theta){
-  // //Wrap theta
   if(theta > 180)
     theta -= 360;
   if(theta < -180)

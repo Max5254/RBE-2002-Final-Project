@@ -4,6 +4,10 @@
 
 flameSensor::flameSensor(){}
 
+// much of the communication is taken from the example code provided by the retailer
+// https://www.dfrobot.com/wiki/index.php/Positioning_ir_camera
+
+// initialize the IR camera
 void flameSensor::initialize(){
   bestX = NO_VALUE;
   bestY = NO_VALUE;
@@ -21,6 +25,7 @@ void flameSensor::initialize(){
  delay(100);
 }
 
+// send two bytes to the camera
 void flameSensor::Write_2bytes(byte d1, byte d2)
 {
     Wire.beginTransmission(slaveAddress);
@@ -28,6 +33,7 @@ void flameSensor::Write_2bytes(byte d1, byte d2)
     Wire.endTransmission();
 }
 
+// request data from the camera and store the response in the arrays for x and y
 void flameSensor::get(){
   //IR sensor read
    Wire.beginTransmission(slaveAddress);
@@ -65,31 +71,9 @@ void flameSensor::get(){
    s   = data_buf[12];
    Ix[3] += (s & 0x30) <<4;
    Iy[3] += (s & 0xC0) <<2;
-
-   // for(i=0; i<4; i++)
-   // {
-   //   if (Ix[i] < 1000)
-   //     Serial.print("");
-   //   if (Ix[i] < 100)
-   //     Serial.print("");
-   //   if (Ix[i] < 10)
-   //     Serial.print("");
-   //   Serial.print( int(Ix[i]) );
-   //   Serial.print(",");
-   //   if (Iy[i] < 1000)
-   //     Serial.print("");
-   //   if (Iy[i] < 100)
-   //     Serial.print("");
-   //   if (Iy[i] < 10)
-   //     Serial.print("");
-   //   Serial.print( int(Iy[i]) );
-   //   if (i<3)
-   //     Serial.print(",");
-   // }
-   // Serial.println("");
-
 }
 
+// gets the active index of which reading is currently returning an actual reading
 int flameSensor::getActive(){
   for (int i = 0; i < 4; i++){
     if(Ix[i] != 1023){
@@ -99,6 +83,8 @@ int flameSensor::getActive(){
   return 0;
 }
 
+// returns true once the robot has driven by the flame in two axis such that it knows where it is on the field
+// records odom coordinates and calculates height when driving by candle at close to 90deg angle
 bool flameSensor::checkFlame(double x, double y, double t){
   if (abs(fmod(t+360,180)) < abs(bestXt)){
     bestX = x;
@@ -117,34 +103,33 @@ bool flameSensor::checkFlame(double x, double y, double t){
   return abs(bestXt) < THETA_RANGE && abs(bestYt) < THETA_RANGE;
 }
 
+// returns the X coordinate of candle
 double flameSensor::getCandleX(){
   return bestX;
 }
-
+// returns the Y coordinate of candle
 double flameSensor::getCandleY(){
   return bestY;
 }
-
+// returns the Z coordinate of candle
 double flameSensor::getCandleZ(){
     return bestZ;
 }
-
+// returns the X coordinate of IR camera reading
 int flameSensor::getX1(){
   get();
   return int(Ix[getActive()]);
 }
-
+// returns the Y coordinate of IR camera reading
 int flameSensor::getY1(){
   get();
   return int(Iy[getActive()]);
 }
-
+// returns the horrizontal angle offset of the IR camera to the flame
 double flameSensor::getHAngle(){
-  return (getX1()-576)*-0.0396;
+  return (getX1()-576)*-0.0396; //determined experimentally with data points
 }
-
+// returns the vertical angle offset of the IR camera to the flame
 double flameSensor::getVAngle(){
-  // return (getY1()*0.0386)-11.2;
-  return (getY1()*0.0408)-8.81;
-
+  return (getY1()*0.0408)-8.81; //determined experimentally with data points
 }

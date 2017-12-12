@@ -4,7 +4,7 @@ BNO055::BNO055() :
   bno(55)
 {}
 
-
+// print specific details of the sensor
 void BNO055::displaySensorDetails(void){
     sensor_t sensor;
     bno.getSensor(&sensor);
@@ -19,7 +19,7 @@ void BNO055::displaySensorDetails(void){
     Serial.println("");
 }
 
-
+// prints the current calibration status
 void BNO055::displayCalStatus(void)
 {
     /* Get the four calibration values (0..3) */
@@ -47,8 +47,8 @@ void BNO055::displayCalStatus(void)
     Serial.print(mag, DEC);
   }
 
-  void BNO055::displaySensorStatus(void)
-{
+// displays any status values from sensor
+void BNO055::displaySensorStatus(void){
     /* Get the system status values (mostly for debugging purposes) */
     uint8_t system_status, self_test_results, system_error;
     system_status = self_test_results = system_error = 0;
@@ -66,7 +66,7 @@ void BNO055::displayCalStatus(void)
     delay(500);
 }
 
-
+//init the sensor
 void BNO055::initialize(){
   /* Initialise the sensor */
     if (!bno.begin())
@@ -79,15 +79,17 @@ void BNO055::initialize(){
         while (1);
     }
 
+   //this turned out to make things worse
    //loadCalibration();
 
    bno.setExtCrystalUse(true);
-   // bno.setMode(0X08);
+   // bno.setMode(0X08); // set mode to only use Gyro&Accel
 
    delay(2000);
 
 }
 
+// applies an offset to the IMU so you can rezero the angle
 void BNO055::reset(int angle){
   sensors_event_t event;
   bno.getEvent(&event);
@@ -96,7 +98,7 @@ void BNO055::reset(int angle){
   Serial.println(offset);
 }
 
-
+// loads in calibration data stored on arduinos EEPROM
 void BNO055::loadCalibration(){
   int eeAddress = 0;
   long bnoID;
@@ -212,18 +214,19 @@ void BNO055::calibrate(){
   Serial.println("\n--------------------------------\n");
 }
 
+// returns the X angle of the imu wrapped between 180 and -180 and zeroed to a value
 float BNO055::getX(){
   sensors_event_t event;
   bno.getEvent(&event);
   return wrap(event.orientation.x - offset);
 }
-
+// returns the Y angle of the imu
 float BNO055::getY(){
   sensors_event_t event;
   bno.getEvent(&event);
   return event.orientation.y;
 }
-
+// returns the Z angle of the imu
 float BNO055::getZ(){
   sensors_event_t event;
   bno.getEvent(&event);
